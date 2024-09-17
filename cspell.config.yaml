@@ -1,0 +1,11 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions:
+  - name: gtk4-rs
+    path: ./.github/config/gtk4-rs.dict
+    addWords: true
+dictionaries:
+  - gtk4-rs
+words: []
+ignoreWords: []
+import: []
