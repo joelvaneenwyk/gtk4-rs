@@ -14,3 +14,7 @@ book/book
 *.log
 **/**/docs.md
 **~
+
+# pixi environments
+.pixi
+*.egg-info
