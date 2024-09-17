@@ -6,3 +6,7 @@
 	path = gir-files
 	url = https://github.com/gtk-rs/gir-files
 	update = none
+[submodule "gtk"]
+	path = gtk
+	url = https://github.com/joelvaneenwyk/gtk.git
+	branch = main
