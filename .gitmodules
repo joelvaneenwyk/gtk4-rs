@@ -10,3 +10,7 @@
 	path = gtk
 	url = https://github.com/joelvaneenwyk/gtk.git
 	branch = main
+[submodule "build/vcpkg"]
+	path = build/vcpkg
+	url = https://github.com/microsoft/vcpkg
+	branch = master
