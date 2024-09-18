@@ -18,3 +18,11 @@ book/book
 # pixi environments
 .pixi
 *.egg-info
+
+.task/
+builddir/
+.venv/
+.mypy_cache/
+.build/
+.cspell/
+.git/

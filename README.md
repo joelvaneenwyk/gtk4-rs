@@ -84,13 +84,13 @@ python3 ./generator.py
 If you didn't do so yet, please check out all the submodules before via
 
 ```bash
-$ git submodule update --checkout
+git submodule update --checkout
 ```
 
 All the crates except `gtk4-macros` follow this structure
 
 ```text
-   ./crate 
+   ./crate
    ├── Gir.toml
    ├── README.md
    ├── src

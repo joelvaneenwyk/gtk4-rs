@@ -45,6 +45,7 @@ libc
 libepoxy
 libloading
 lockfiles
+markupsafe
 memchr
 memoffset
 miniz
@@ -54,6 +55,7 @@ msdevshell
 msvc
 MSVC
 MSYS
+mypy
 noconfirm
 nofallback
 ntldd
@@ -72,6 +74,7 @@ rustdoc
 rustybuzz
 serde
 setuptools
+shopt
 slotmap
 smallvec
 subprojects

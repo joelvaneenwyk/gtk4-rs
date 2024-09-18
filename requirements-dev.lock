@@ -10,6 +10,10 @@
 #   universal: false
 
 -e file:.
+jinja2==3.1.4
+    # via gtk4-rs
+markupsafe==2.1.5
+    # via jinja2
 meson==1.5.1
     # via gtk4-rs
 ninja==1.11.1.1
