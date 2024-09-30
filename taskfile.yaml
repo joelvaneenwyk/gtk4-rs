@@ -6,13 +6,6 @@ version: "3"
 shopt:
   - expand_aliases
 
-includes:
-  gtkas:
-    file: ./gtk/taskfile.yaml
-    optional: true
-    flatten: true
-    internal: true
-
 vars:
   VCPKG_BOOTSTRAP_BAT: "{{.TASKFILE_DIR}}/build/vcpkg/bootstrap-vcpkg.bat"
   VCPKG_BOOTSTRAP_SH: "{{.TASKFILE_DIR}}/build/vcpkg/bootstrap-vcpkg.sh"
