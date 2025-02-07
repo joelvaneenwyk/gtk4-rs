@@ -6,22 +6,27 @@ authors = [
     { name = "Joel Van Eenwyk", email = "joel.vaneenwyk@gmail.com" }
 ]
 dependencies = [
-    "meson>=1.5.1",
-    "ninja>=1.11.1.1",
     "setuptools>=75.1.0",
     "packaging>=24.1",
     "jinja2>=3.1.4",
+    "gvsbuild",
 ]
 readme = "README.md"
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.rye]
+[tool.uv]
 managed = true
-dev-dependencies = []
+link-mode = "copy"
+
+[tool.uv.pip]
+universal = true
+
+[tool.uv.sources]
+gvsbuild = { git = "https://github.com/joelvaneenwyk/gvsbuild" }
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -29,15 +34,10 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/gtk4_rs"]
 
-[tool.pixi.project]
-channels = ["conda-forge"]
-platforms = ["win-64"]
-
-[tool.pixi.pypi-dependencies]
-gtk4-rs = { path = ".", editable = true }
-
-[tool.pixi.tasks]
-
-[tool.pixi.dependencies]
-cairo = ">=1.18.0,<2"
-graphene = ">=3.3,<4"
+[dependency-groups]
+dev = [
+    "cmake>=3.31.4",
+    "meson>=1.7.0",
+    "ninja>=1.11.1.3",
+    "ruff>=0.9.5",
+]
