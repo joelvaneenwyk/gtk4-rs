@@ -1,5 +1,11 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 # https://taskfile.dev
+#
+# Taskfile wraps the build process for the GTK4 Rust crate to primarily
+# make the process more streamlined for Windows but is intended to work on
+# all platforms. Ideally, this will eventually not be necessary anymore
+# but until then it's an easier way to maintain builds.
+#
 
 version: "3"
 
