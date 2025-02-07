@@ -7,30 +7,20 @@ shopt:
   - expand_aliases
 
 vars:
-  VCPKG_BOOTSTRAP_BAT: "{{.TASKFILE_DIR}}/build/vcpkg/bootstrap-vcpkg.bat"
-  VCPKG_BOOTSTRAP_SH: "{{.TASKFILE_DIR}}/build/vcpkg/bootstrap-vcpkg.sh"
-  VCPKG_EXE: "{{.TASKFILE_DIR}}/build/vcpkg/vcpkg.exe"
+  TARGET: x86_64-pc-windows-gnu
 
-  RUN_WINDOWS: 'cmd /d /c'
-  RUN_UNIX: 'sh -c'
+  LOCAL_BUILD_DIR: .build
+
+  GVSBUILD_DIR: "C:/.tmp/gvs"
+  GVSBUILD_DIR_LNK: "{{.LOCAL_BUILD_DIR}}/gvsbuild"
+
+  GTK_DIR: "{{ joinPath .TASKFILE_DIR .GVSBUILD_DIR_LNK }}"
+
+  GVS_GTK_ROOT_DIR: "{{.GVSBUILD_DIR}}/gtk/x64/release"
+
+  RUN_WINDOWS: "cmd /d /c"
+  RUN_UNIX: "sh -c"
   RUN: '{{if eq OS "windows"}}{{.RUN_WINDOWS}}{{ else }}{{.RUN_UNIX}}{{ end }}'
-
-  MSBUILD_EXE_RAW:
-    sh: |
-      strings=("Preview" "Enterprise" "Professional" "Community")
-      for str in "${strings[@]}"
-      do
-        result="C:/Program Files/Microsoft Visual Studio/2022/${str}/MSBuild/Current/Bin/amd64/MSBuild.exe"
-        if [ -e "$result" ]; then
-          echo "$result"
-          break
-        fi
-      done
-  MSBUILD_EXE: '{{fromSlash .MSBUILD_EXE_RAW}}'
-
-  BUILD_INT_BASE_DIR: "{{.TASKFILE_DIR}}/.build"
-  BUILD_INT_DIR: "{{.BUILD_INT_BASE_DIR}}/vscode"
-  BUILD_DIR: "{{fromSlash .BUILD_INT_DIR}}"
 
   BUILD_TOOLCHAIN:
   BUILD_ARCH: x86_64
@@ -45,15 +35,11 @@ vars:
     - "ncurses"
     - "{{.PACKAGE_NAME_PREFIX}}-{{.BUILD_CC}}"
     - "{{.PACKAGE_NAME_PREFIX}}-clang"
-    # - "{{.PACKAGE_NAME_PREFIX}}-gcc"
-    # - "{{.PACKAGE_NAME_PREFIX}}-glib2"
-    # - "{{.PACKAGE_NAME_PREFIX}}-meson"
     - "{{.PACKAGE_NAME_PREFIX}}-ncurses"
     - "{{.PACKAGE_NAME_PREFIX}}-ntldd"
     - "{{.PACKAGE_NAME_PREFIX}}-openssl"
     - "{{.PACKAGE_NAME_PREFIX}}-pkgconf"
     - "{{.PACKAGE_NAME_PREFIX}}-zlib"
-    # Defaults
     - "{{.PACKAGE_NAME_PREFIX}}-gstreamer"
     - "{{.PACKAGE_NAME_PREFIX}}-pango"
     - "{{.PACKAGE_NAME_PREFIX}}-gcc"
@@ -64,98 +50,152 @@ vars:
     - "{{.PACKAGE_NAME_PREFIX}}-libepoxy"
     - "{{.PACKAGE_NAME_PREFIX}}-pango"
     - "{{.PACKAGE_NAME_PREFIX}}-cairo"
-  MSYS2_PYTHON_PACKAGES:
-    - "{{.PACKAGE_NAME_PREFIX}}-python"
-    - "{{.PACKAGE_NAME_PREFIX}}-python-pip"
-    - "{{.PACKAGE_NAME_PREFIX}}-python-pkgconfig"
 
 env:
   VCPKG_DISABLE_METRICS: 1
 
+  # PATH variable with GTK bin folder added. Not able to override
+  # the PATH variable globally here so we do it locally as needed.
+  PATH_GTK: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "bin" }}{{ if eq OS "windows" }};{{ else }}:{{ end }}{{ env "PATH" }}'
+
+  GTK_ROOT_DIR: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "" }}'
+  GDK_PIXBUF_MODULE_FILE: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "lib/gdk-pixbuf-2.0/2.10.0/loaders.cache" }}'
+  GIO_EXTRA_MODULES: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "lib/gio/modules" }}'
+  GTK_DATA_PREFIX: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "share" }}'
+  GTK_PATH: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "share/gtk-4.0" }}'
+  PKG_CONFIG_PATH: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "lib/pkgconfig" }}'
+  XDG_DATA_DIRS: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "share" }}'
+
+  GTK_DIR: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "" }}'
+  GTK_PKG_CONFIG_DIR: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "lib/pkgconfig" }}'
+  GTK_BIN_DIR: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "bin" }}'
+  GTK_LIB_DIR: '{{ joinPath (.GVS_GTK_ROOT_DIR | default "") "lib" }}'
+
 tasks:
   default:
     cmds:
-      - task: gtk4-rs-build
-      # - task: meson-build
+      - task: build
 
-  meson-clean:
+  check-environment:
+    aliases: [env]
     cmds:
-      - task: delete
-        vars: { TARGET_DIR: '{{.BUILD_DIR}}' }
+      - cmd: | # shell
+          PATH="$PATH_GTK" hb-info --help
+      - cmd: | # shell
+          for var in GTK_ROOT_DIR GTK_PKG_CONFIG_DIR GDK_PIXBUF_MODULE_FILE \
+                     GIO_EXTRA_MODULES GTK_DATA_PREFIX \
+                     GTK_LIB_DIR GTK_PATH PKG_CONFIG_PATH \
+                     XDG_DATA_DIRS; do
+            test -e "${!var}" && echo "✓ Path $var: '${!var}'" || echo "✗ Path $var: ${!var}"
+          done
 
-  meson-configure:
-    deps: [install-dependencies]
-    preconditions:
-      - meson --version
+  sync:
     sources:
-      - meson.build
+      - pyproject.toml
     generates:
-      - '{{.BUILD_DIR}}/meson-info/meson-info.json'
+      - .venv/**/*
     cmds:
-      - cmd: >-
-          meson setup
-          --reconfigure
-          --backend=vs2022
-          --wrap-mode=forcefallback
-          --native-file "{{.TASKFILE_DIR}}/scripts/meson-vcpkg.ini"
-          -Duse_zlib_ng=false
-          -Dbuildtype=release
-          "{{.BUILD_DIR}}" "{{.TASKFILE_DIR}}"
+      - cmd: uv sync
 
-  meson-build:
-    deps: [meson-configure]
-    preconditions:
-      - '"{{.MSBUILD_EXE}}" --version'
-    vars:
-      SOLUTION_PATH: '{{.BUILD_DIR}}/gtk.sln'
+  build:
+    deps: [gtk]
+    sources:
+      - ./Cargo.*
+      - ./gtk4/**/*.rs
+      - ./gtk4/**/Cargo.*
+    generates:
+      - ./target/release/gtk*{{exeExt}}
     cmds:
-      - cmd: '"{{.MSBUILD_EXE}}" /t:Build "{{fromSlash .SOLUTION_PATH}}"'
+      - cmd: | # shell
+          cmd.exe /D /C \
+            rmdir /s /q "{{ joinPath .TASKFILE_DIR "target"}}" || true
+      - cmd: | # shell
+          cargo build --release --locked
+
+  run:
+    deps: [build]
+    dir: ./target/release/
+    cmds:
+      - cmd: | # shell
+          cargo run --release --locked
+
+  gtk:
+    deps: [gtk-build]
+    vars:
+      SOURCE_BIN_DIR: "{{.TASKFILE_DIR}}/{{.GVSBUILD_DIR_LNK}}/gtk/x64/release/bin"
+      TARGET_BIN_DIR: "{{.TASKFILE_DIR}}/target/release"
+    silent: true
+    env:
+      GTK_SOURCE_BIN_DIR: "{{.SOURCE_BIN_DIR | fromSlash}}"
+      GTK_TARGET_BIN_DIR: "{{.TARGET_BIN_DIR | fromSlash}}"
+    cmds:
+      - cmd: | # shell
+          if xcopy /y /s /i /d "$GTK_SOURCE_BIN_DIR" "$GTK_TARGET_BIN_DIR" >nul; then
+            echo "Updated GTK binaries in target directory: '$GTK_TARGET_BIN_DIR'"
+          else
+            echo "Failed to copy GTK binaries to target directory."
+            exit 1
+          fi
+
+  git-submodule-update:
+    sources:
+      - .gitmodules
+    generates:
+      - ./gir/.gitignore
+      - ./gir-files/.gitignore
+      - ./gtk/.gitignore
+    cmds:
+      - cmd: git submodule update --checkout --recursive
+
+  gtk-build:
+    deps: [git-submodule-update]
+    aliases: [build-gtk, gtk4]
+    sources:
+      - uv.lock
+    generates:
+      - .build/gvsbuild/gtk/**/bin/gtk*.dll
+    vars:
+      DIR_LINK: "{{ joinPath .TASKFILE_DIR .GVSBUILD_DIR_LNK | fromSlash }}"
+      DIR_TARGET: "{{.GVSBUILD_DIR | fromSlash}}"
+    cmds:
+      - cmd: | # shell
+          {{.RUN}} mkdir "{{.DIR_LINK}}" || true
+          {{.RUN}} rmdir /q /s "{{.DIR_LINK}}" || true
+          {{.RUN}} mkdir "{{.DIR_TARGET}}" || true
+          echo "Creating symlink {{.DIR_LINK}} -> {{.DIR_TARGET}}"
+          {{.RUN}} mklink /D "{{.DIR_LINK}}" "{{.DIR_TARGET}}"
+      - cmd: | # shell
+          uv run gvsbuild \
+            build gtk4 \
+            {{if .VERBOSE}}--verbose{{end}} \
+            --build-dir "{{.DIR_LINK}}" \
+            --msys-dir "$USERPROFILE/scoop/apps/msys2/current"
+
+  venv:
+    sources:
+      - pyproject.toml
+    generates:
+      - .venv/
+    cmds:
+      - cmd: uv sync
 
   install-dependencies:
     deps: [install-packages-scoop-pkg-config]
     cmds:
       - task: install-packages
-      - task: vcpkg-integrate
 
   scoop-install:
     desc: Install libraries with scoop
     status:
-      - 'scoop --version'
+      - "scoop --version"
     cmds:
-      - cmd: pwsh -NoProfile -Command 'iex "& {$(irm get.scoop.sh)} -RunAsAdmin"'
+      - cmd: | # shell
+          pwsh -NoProfile -Command 'iex "& {$(irm get.scoop.sh)} -RunAsAdmin"'
         platforms: [windows]
         ignore_error: true
       - cmd: pwsh -NoProfile -Command 'Join-Path (Resolve-Path ~).Path "scoop/shims" >> $Env:GITHUB_PATH'
         platforms: [windows]
         ignore_error: true
-
-  git-submodule-init:
-    status:
-      - 'test -f "{{.VCPKG_BOOTSTRAP_BAT}}"'
-    cmds:
-      - cmd: 'git -C "{{.TASKFILE_DIR}}" submodule update --init --recursive'
-
-  vcpkg-integrate:
-    deps: [vcpkg-download]
-    internal: true
-    cmds:
-      - cmd: '{{.RUN}} "{{ fromSlash .VCPKG_EXE }}" --vcpkg-root "{{ joinPath .TASKFILE_DIR "build" "vcpkg" }}" integrate install'
-
-  vcpkg-download:
-    deps: [git-submodule-init]
-    status:
-      - 'test -f "{{.VCPKG_EXE}}"'
-    cmds:
-      - cmd: '{{.RUN}} "{{ fromSlash .VCPKG_BOOTSTRAP_BAT }}" -disableMetrics'
-
-  vcpkg:
-    deps: [vcpkg-download]
-    cmds:
-      - cmd: '{{.RUN}} "{{ fromSlash .VCPKG_EXE }}" --vcpkg-root "{{ joinPath .TASKFILE_DIR "build" "vcpkg" }}" {{.CLI_ARGS}}'
-
-  meson:
-    cmds:
-      - cmd: '{{.RUN}} meson {{.CLI_ARGS}}'
 
   update-packages:
     ignore_error: true
@@ -166,7 +206,7 @@ tasks:
     deps: [pacman-unlock]
     cmds:
       - task: pacman-unlock
-      - cmd: 'pacman -Syu --noconfirm'
+      - cmd: "pacman -Syu --noconfirm"
         ignore_error: true
 
   install-packages:
@@ -190,9 +230,9 @@ tasks:
       PACKAGES: '{{.MSYS2_PACKAGES | join " "}}'
     cmds:
       - task: pacman-unlock
-      - cmd: 'pacman -Syu --noconfirm'
+      - cmd: "pacman -Syu --noconfirm"
         ignore_error: true
-      - cmd: 'pacman -S --needed --noconfirm {{ .PACKAGES }}'
+      - cmd: "pacman -S --needed --noconfirm {{ .PACKAGES }}"
         ignore_error: true
       - task: pacman-unlock
 
@@ -205,24 +245,24 @@ tasks:
           var: MSYS2_PACKAGES
         task: install-package-pacman
         vars:
-          PACKAGE: '{{.ITEM}}'
+          PACKAGE: "{{.ITEM}}"
 
   pacman-unlock:
     status:
-      - 'test ! -f /var/lib/pacman/db.lck'
+      - "test ! -f /var/lib/pacman/db.lck"
     cmds:
-      - cmd: 'rm -f /var/lib/pacman/db.lck'
+      - cmd: "rm -f /var/lib/pacman/db.lck"
         ignore_error: true
 
   install-package-pacman:
     deps: [pacman-unlock]
     requires:
       vars: [PACKAGE]
-    desc: 'Install package {{.PACKAGE}}'
+    desc: "Install package {{.PACKAGE}}"
     preconditions:
-      - 'pacman --version'
+      - "pacman --version"
     status:
-      - 'pacman -Qk {{.PACKAGE}}'
+      - "pacman -Qk {{.PACKAGE}}"
     cmds:
       - cmd: 'pacman -S --needed --noconfirm "{{.PACKAGE}}"'
 
@@ -236,98 +276,3 @@ tasks:
         platforms: [windows]
       - cmd: '{{.RUN}} rm -rf "{{.TARGET_DIR}}"'
         platforms: [linux, darwin]
-
-  ninja:
-    deps: [meson]
-    preconditions:
-      - ninja --version
-    cmds:
-      - cmd: 'ninja -C "{{.BUILD_DIR}}"'
-
-  build-msbuild:
-    cmds:
-      - task: build-msbuild-gtk
-        vars: { CONFIG: Debug, PLATFORM: x64 }
-      - task: build-msbuild-gtk
-        vars: { CONFIG: Release, PLATFORM: x64 }
-
-  build-msbuild-gtk:
-    internal: true
-    deps: [install-dependencies]
-    vars:
-      CONFIG: '{{.CONFIG | default "Debug"}}'
-      PLATFORM: '{{.PLATFORM | default "x64"}}'
-    cmds:
-      - cmd: '"{{ .MSBUILD_EXE }}" "{{.TASKFILE_DIR}}/vs/gtk.sln" /t:Build /p:Configuration="{{.CONFIG}}" /p:Platform="{{.PLATFORM}}"'
-
-  sync:
-    sources:
-      - pyproject.toml
-    generates:
-      - requirements.lock
-      - requirements-dev.lock
-      - .venv/**/*
-    cmds:
-      - cmd: rye sync --no-lock --quiet
-
-  gtk4-rs-build:
-    deps: [sync, install-dependencies]
-    vars:
-      MESON_OPTIONS: >-
-        -Dgobject-introspection:werror=false
-        -Dgraphene:introspection=disabled
-        -Dintrospection=disabled
-        -Dmedia-gstreamer=disabled
-        -Dvulkan=disabled
-        --buildtype release
-        --wrap-mode nofallback
-        -D b_lto=true
-        -D strip=true
-        --default-library shared
-      CROSS_FILE_DEFAULT: /usr/share/mingw/toolchain-mingw64.meson
-      CROSS_FILE_WINE: /usr/share/mingw/toolchain-mingw64-wine.meson
-      MESON_EXE_WRAPPER_WINE: /usr/bin/x86_64-w64-mingw64-wine
-    cmds:
-      - cmd: |
-          rye run meson \
-            setup "{{ joinPath .TASKFILE_DIR "gtk" }}" "{{ joinPath .TASKFILE_DIR ".build" }}" \
-            --prefix="{{ joinPath .TASKFILE_DIR ".build" }}" \
-            -Dbackend_max_links=1 \
-            -Dbuild-demos=false \
-            -Dbuild-tests=false \
-            -Dvulkan=disabled \
-            -Dmedia-gstreamer=disabled \
-            -Dbuild-examples=false \
-            -Dglib:tests=false \
-            -Dharfbuzz:tests=disabled \
-            -Dharfbuzz:docs=disabled \
-            -Dgraphene:tests=false \
-            -Dgdk-pixbuf:tests=false \
-            -Dcairo:tests=disabled
-      # - cmd: |
-      #     . .gitlab-ci/show-info-linux.sh
-      #   ignore_error: true
-      # - cmd: | # shell
-      #     set -eax
-      #     if [ -z "$CROSS_FILE" ]; then
-      #       if [ -z "$NEED_WINE" ]; then
-      #         export CROSS_FILE="{{.CROSS_FILE_DEFAULT}}"
-      #       else
-      #         export CROSS_FILE="{{.CROSS_FILE_WINE}}"
-      #         export MESON_EXE_WRAPPER="{{.MESON_EXE_WRAPPER_WINE}}"
-      #       fi
-      #     fi
-      #     rye run meson subprojects download
-      #     rye run meson subprojects update --reset#
-      #     if rye run meson setup {{.MESON_OPTIONS}} _build; then
-      #       echo "Meson configuration succeeded."
-      #     else
-      #       echo "Meson configuration failed, attempting to reconfigure."
-      #       if rye run meson setup --reconfigure {{.MESON_OPTIONS}} _build; then
-      #         echo "Meson reconfiguration succeeded."
-      #       else
-      #         echo "Meson reconfiguration failed."
-      #         exit 5
-      #       fi
-      #     fi
-      #     rye run meson compile -C _build
