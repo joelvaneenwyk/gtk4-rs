@@ -104,7 +104,7 @@ impl DragSource {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drag-begin\0".as_ptr() as *const _,
+                c"drag-begin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drag_begin_trampoline::<F> as *const (),
                 )),
@@ -140,7 +140,7 @@ impl DragSource {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drag-cancel\0".as_ptr() as *const _,
+                c"drag-cancel".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drag_cancel_trampoline::<F> as *const (),
                 )),
@@ -171,7 +171,7 @@ impl DragSource {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drag-end\0".as_ptr() as *const _,
+                c"drag-end".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drag_end_trampoline::<F> as *const (),
                 )),
@@ -189,8 +189,8 @@ impl DragSource {
             F: Fn(&DragSource, f64, f64) -> Option<gdk::ContentProvider> + 'static,
         >(
             this: *mut ffi::GtkDragSource,
-            x: libc::c_double,
-            y: libc::c_double,
+            x: std::ffi::c_double,
+            y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) -> *mut gdk::ffi::GdkContentProvider {
             let f: &F = &*(f as *const F);
@@ -200,7 +200,7 @@ impl DragSource {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"prepare\0".as_ptr() as *const _,
+                c"prepare".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     prepare_trampoline::<F> as *const (),
                 )),
@@ -223,7 +223,7 @@ impl DragSource {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::actions\0".as_ptr() as *const _,
+                c"notify::actions".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_actions_trampoline::<F> as *const (),
                 )),
@@ -246,7 +246,7 @@ impl DragSource {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::content\0".as_ptr() as *const _,
+                c"notify::content".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_content_trampoline::<F> as *const (),
                 )),
@@ -340,6 +340,7 @@ impl DragSourceBuilder {
     /// Build the [`DragSource`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> DragSource {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

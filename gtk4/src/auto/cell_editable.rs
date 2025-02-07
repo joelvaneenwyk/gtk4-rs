@@ -24,12 +24,7 @@ impl CellEditable {
     pub const NONE: Option<&'static CellEditable> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::CellEditable>> Sealed for T {}
-}
-
-pub trait CellEditableExt: IsA<CellEditable> + sealed::Sealed + 'static {
+pub trait CellEditableExt: IsA<CellEditable> + 'static {
     #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
     #[allow(deprecated)]
     #[doc(alias = "gtk_cell_editable_editing_done")]
@@ -81,7 +76,7 @@ pub trait CellEditableExt: IsA<CellEditable> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"editing-done\0".as_ptr() as *const _,
+                c"editing-done".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     editing_done_trampoline::<Self, F> as *const (),
                 )),
@@ -103,7 +98,7 @@ pub trait CellEditableExt: IsA<CellEditable> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"remove-widget\0".as_ptr() as *const _,
+                c"remove-widget".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     remove_widget_trampoline::<Self, F> as *const (),
                 )),
@@ -129,7 +124,7 @@ pub trait CellEditableExt: IsA<CellEditable> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::editing-canceled\0".as_ptr() as *const _,
+                c"notify::editing-canceled".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_editing_canceled_trampoline::<Self, F> as *const (),
                 )),

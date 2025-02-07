@@ -27,12 +27,7 @@ impl CellArea {
     pub const NONE: Option<&'static CellArea> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::CellArea>> Sealed for T {}
-}
-
-pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
+pub trait CellAreaExt: IsA<CellArea> + 'static {
     #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
     #[allow(deprecated)]
     #[doc(alias = "gtk_cell_area_activate")]
@@ -231,7 +226,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
     #[allow(deprecated)]
     #[doc(alias = "gtk_cell_area_foreach")]
     fn foreach<P: FnMut(&CellRenderer) -> bool>(&self, callback: P) {
-        let callback_data: P = callback;
+        let mut callback_data: P = callback;
         unsafe extern "C" fn callback_func<P: FnMut(&CellRenderer) -> bool>(
             renderer: *mut ffi::GtkCellRenderer,
             data: glib::ffi::gpointer,
@@ -241,12 +236,12 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             (*callback)(&renderer).into_glib()
         }
         let callback = Some(callback_func::<P> as _);
-        let super_callback0: &P = &callback_data;
+        let super_callback0: &mut P = &mut callback_data;
         unsafe {
             ffi::gtk_cell_area_foreach(
                 self.as_ref().to_glib_none().0,
                 callback,
-                super_callback0 as *const _ as *mut _,
+                super_callback0 as *mut _ as *mut _,
             );
         }
     }
@@ -260,7 +255,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
         background_area: &gdk::Rectangle,
         callback: P,
     ) {
-        let callback_data: P = callback;
+        let mut callback_data: P = callback;
         unsafe extern "C" fn callback_func<
             P: FnMut(&CellRenderer, &gdk::Rectangle, &gdk::Rectangle) -> bool,
         >(
@@ -276,7 +271,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             (*callback)(&renderer, &cell_area, &cell_background).into_glib()
         }
         let callback = Some(callback_func::<P> as _);
-        let super_callback0: &P = &callback_data;
+        let super_callback0: &mut P = &mut callback_data;
         unsafe {
             ffi::gtk_cell_area_foreach_alloc(
                 self.as_ref().to_glib_none().0,
@@ -285,7 +280,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
                 cell_area.to_glib_none().0,
                 background_area.to_glib_none().0,
                 callback,
-                super_callback0 as *const _ as *mut _,
+                super_callback0 as *mut _ as *mut _,
             );
         }
     }
@@ -702,7 +697,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             renderer: *mut ffi::GtkCellRenderer,
             editable: *mut ffi::GtkCellEditable,
             cell_area: *mut gdk::ffi::GdkRectangle,
-            path: *mut libc::c_char,
+            path: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -719,7 +714,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"add-editable\0".as_ptr() as *const _,
+                c"add-editable".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     add_editable_trampoline::<Self, F> as *const (),
                 )),
@@ -757,7 +752,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"apply-attributes\0".as_ptr() as *const _,
+                c"apply-attributes".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     apply_attributes_trampoline::<Self, F> as *const (),
                 )),
@@ -777,7 +772,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
         >(
             this: *mut ffi::GtkCellArea,
             renderer: *mut ffi::GtkCellRenderer,
-            path: *mut libc::c_char,
+            path: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -792,7 +787,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"focus-changed\0".as_ptr() as *const _,
+                c"focus-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     focus_changed_trampoline::<Self, F> as *const (),
                 )),
@@ -826,7 +821,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"remove-editable\0".as_ptr() as *const _,
+                c"remove-editable".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     remove_editable_trampoline::<Self, F> as *const (),
                 )),
@@ -852,7 +847,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::edit-widget\0".as_ptr() as *const _,
+                c"notify::edit-widget".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_edit_widget_trampoline::<Self, F> as *const (),
                 )),
@@ -878,7 +873,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::edited-cell\0".as_ptr() as *const _,
+                c"notify::edited-cell".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_edited_cell_trampoline::<Self, F> as *const (),
                 )),
@@ -901,7 +896,7 @@ pub trait CellAreaExt: IsA<CellArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::focus-cell\0".as_ptr() as *const _,
+                c"notify::focus-cell".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_focus_cell_trampoline::<Self, F> as *const (),
                 )),

@@ -23,12 +23,7 @@ impl PrintOperationPreview {
     pub const NONE: Option<&'static PrintOperationPreview> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::PrintOperationPreview>> Sealed for T {}
-}
-
-pub trait PrintOperationPreviewExt: IsA<PrintOperationPreview> + sealed::Sealed + 'static {
+pub trait PrintOperationPreviewExt: IsA<PrintOperationPreview> + 'static {
     #[doc(alias = "gtk_print_operation_preview_end_preview")]
     fn end_preview(&self) {
         unsafe {
@@ -78,7 +73,7 @@ pub trait PrintOperationPreviewExt: IsA<PrintOperationPreview> + sealed::Sealed 
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"got-page-size\0".as_ptr() as *const _,
+                c"got-page-size".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     got_page_size_trampoline::<Self, F> as *const (),
                 )),
@@ -107,7 +102,7 @@ pub trait PrintOperationPreviewExt: IsA<PrintOperationPreview> + sealed::Sealed 
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"ready\0".as_ptr() as *const _,
+                c"ready".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     ready_trampoline::<Self, F> as *const (),
                 )),

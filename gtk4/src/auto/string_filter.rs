@@ -119,7 +119,7 @@ impl StringFilter {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::expression\0".as_ptr() as *const _,
+                c"notify::expression".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_expression_trampoline::<F> as *const (),
                 )),
@@ -142,7 +142,7 @@ impl StringFilter {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::ignore-case\0".as_ptr() as *const _,
+                c"notify::ignore-case".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_ignore_case_trampoline::<F> as *const (),
                 )),
@@ -165,7 +165,7 @@ impl StringFilter {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::match-mode\0".as_ptr() as *const _,
+                c"notify::match-mode".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_match_mode_trampoline::<F> as *const (),
                 )),
@@ -188,7 +188,7 @@ impl StringFilter {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::search\0".as_ptr() as *const _,
+                c"notify::search".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_search_trampoline::<F> as *const (),
                 )),
@@ -250,6 +250,7 @@ impl StringFilterBuilder {
     /// Build the [`StringFilter`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> StringFilter {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

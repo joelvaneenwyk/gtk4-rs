@@ -29,12 +29,7 @@ impl Accessible {
     pub const NONE: Option<&'static Accessible> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Accessible>> Sealed for T {}
-}
-
-pub trait AccessibleExt: IsA<Accessible> + sealed::Sealed + 'static {
+pub trait AccessibleExt: IsA<Accessible> + 'static {
     #[cfg(feature = "v4_14")]
     #[cfg_attr(docsrs, doc(cfg(feature = "v4_14")))]
     #[doc(alias = "gtk_accessible_announce")]
@@ -231,7 +226,7 @@ pub trait AccessibleExt: IsA<Accessible> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::accessible-role\0".as_ptr() as *const _,
+                c"notify::accessible-role".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_accessible_role_trampoline::<Self, F> as *const (),
                 )),

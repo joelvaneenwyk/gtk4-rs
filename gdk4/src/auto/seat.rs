@@ -23,12 +23,7 @@ impl Seat {
     pub const NONE: Option<&'static Seat> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Seat>> Sealed for T {}
-}
-
-pub trait SeatExt: IsA<Seat> + sealed::Sealed + 'static {
+pub trait SeatExt: IsA<Seat> + 'static {
     #[doc(alias = "gdk_seat_get_capabilities")]
     #[doc(alias = "get_capabilities")]
     fn capabilities(&self) -> SeatCapabilities {
@@ -95,7 +90,7 @@ pub trait SeatExt: IsA<Seat> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"device-added\0".as_ptr() as *const _,
+                c"device-added".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     device_added_trampoline::<Self, F> as *const (),
                 )),
@@ -124,7 +119,7 @@ pub trait SeatExt: IsA<Seat> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"device-removed\0".as_ptr() as *const _,
+                c"device-removed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     device_removed_trampoline::<Self, F> as *const (),
                 )),
@@ -153,7 +148,7 @@ pub trait SeatExt: IsA<Seat> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"tool-added\0".as_ptr() as *const _,
+                c"tool-added".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     tool_added_trampoline::<Self, F> as *const (),
                 )),
@@ -182,7 +177,7 @@ pub trait SeatExt: IsA<Seat> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"tool-removed\0".as_ptr() as *const _,
+                c"tool-removed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     tool_removed_trampoline::<Self, F> as *const (),
                 )),

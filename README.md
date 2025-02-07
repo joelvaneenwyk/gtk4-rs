@@ -4,6 +4,7 @@ A group of crates that aims to provide complete [GTK](https://gtk.org/) 4 bindin
 
 - [GTK](./gtk4)
 - [GDK](./gdk4): An intermediate layer which isolates GTK from the details of the windowing system.
+  - [GDK Macos](./gdk4-macos): Macos backend specific functions.
   - [GDK Wayland](./gdk4-wayland): Wayland backend specific functions.
   - [GDK Win32](./gdk4-win32): Windows backend specific functions.
   - [GDK X11](./gdk4-x11): X backend specific functions.
@@ -11,11 +12,11 @@ A group of crates that aims to provide complete [GTK](https://gtk.org/) 4 bindin
 
 The GTK 4 crates also depends on other libraries part of the platform like:
 
-- [GLib](https://github.com/gtk-rs/gtk-rs-core/tree/master/glib)
-- [Gio](https://github.com/gtk-rs/gtk-rs-core/tree/master/gio)
-- [Graphene](https://github.com/gtk-rs/gtk-rs-core/tree/master/graphene)
-- [Cairo](https://github.com/gtk-rs/gtk-rs-core/tree/master/cairo)
-- [Pango](https://github.com/gtk-rs/gtk-rs-core/tree/master/pango)
+- [GLib](https://github.com/gtk-rs/gtk-rs-core/tree/main/glib)
+- [Gio](https://github.com/gtk-rs/gtk-rs-core/tree/main/gio)
+- [Graphene](https://github.com/gtk-rs/gtk-rs-core/tree/main/graphene)
+- [Cairo](https://github.com/gtk-rs/gtk-rs-core/tree/main/cairo)
+- [Pango](https://github.com/gtk-rs/gtk-rs-core/tree/main/pango)
 
 Those are common with the GTK 3 and GStreamer bindings and are part of the [gtk-rs-core](https://github.com/gtk-rs/gtk-rs-core) repository.
 
@@ -23,11 +24,11 @@ For more information about each crate, please refer to their `README.md` file in
 
 ## Minimum supported Rust version
 
-Currently, the minimum supported Rust version is `1.70`.
+Currently, the minimum supported Rust version is `1.80`.
 
 ## Documentation
 
-- [Examples](https://github.com/gtk-rs/gtk4-rs/tree/master/examples)
+- [Examples](https://github.com/gtk-rs/gtk4-rs/tree/main/examples)
 - Book [Stable](https://gtk-rs.org/gtk4-rs/stable/latest/book/)
 - The Rust API [Stable](https://gtk-rs.org/gtk4-rs/stable/latest/docs/) / [Development](https://gtk-rs.org/gtk4-rs/git/docs/)
 
@@ -75,7 +76,7 @@ The bindings are composed of two parts:
 - Automatically generated ones using [gir]
 - Manual parts
 
-The automatic ones can be generated using the [`generator.py`](https://github.com/gtk-rs/gir/blob/master/generator.py) script
+The automatic ones can be generated using the [`generator.py`](https://github.com/gtk-rs/gir/blob/main/generator.py) script
 
 ```bash
 python3 ./generator.py

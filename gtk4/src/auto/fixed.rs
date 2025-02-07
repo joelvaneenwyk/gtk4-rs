@@ -245,16 +245,12 @@ impl FixedBuilder {
     /// Build the [`Fixed`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Fixed {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Fixed>> Sealed for T {}
-}
-
-pub trait FixedExt: IsA<Fixed> + sealed::Sealed + 'static {
+pub trait FixedExt: IsA<Fixed> + 'static {
     #[doc(alias = "gtk_fixed_get_child_position")]
     #[doc(alias = "get_child_position")]
     fn child_position(&self, widget: &impl IsA<Widget>) -> (f64, f64) {

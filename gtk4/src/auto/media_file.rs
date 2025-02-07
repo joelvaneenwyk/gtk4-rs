@@ -79,12 +79,7 @@ impl Default for MediaFile {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::MediaFile>> Sealed for T {}
-}
-
-pub trait MediaFileExt: IsA<MediaFile> + sealed::Sealed + 'static {
+pub trait MediaFileExt: IsA<MediaFile> + 'static {
     #[doc(alias = "gtk_media_file_clear")]
     fn clear(&self) {
         unsafe {
@@ -165,7 +160,7 @@ pub trait MediaFileExt: IsA<MediaFile> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::file\0".as_ptr() as *const _,
+                c"notify::file".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_file_trampoline::<Self, F> as *const (),
                 )),
@@ -191,7 +186,7 @@ pub trait MediaFileExt: IsA<MediaFile> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::input-stream\0".as_ptr() as *const _,
+                c"notify::input-stream".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_input_stream_trampoline::<Self, F> as *const (),
                 )),

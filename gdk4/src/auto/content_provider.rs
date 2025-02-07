@@ -58,12 +58,7 @@ impl ContentProvider {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::ContentProvider>> Sealed for T {}
-}
-
-pub trait ContentProviderExt: IsA<ContentProvider> + sealed::Sealed + 'static {
+pub trait ContentProviderExt: IsA<ContentProvider> + 'static {
     #[doc(alias = "gdk_content_provider_content_changed")]
     fn content_changed(&self) {
         unsafe {
@@ -187,7 +182,7 @@ pub trait ContentProviderExt: IsA<ContentProvider> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"content-changed\0".as_ptr() as *const _,
+                c"content-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     content_changed_trampoline::<Self, F> as *const (),
                 )),
@@ -213,7 +208,7 @@ pub trait ContentProviderExt: IsA<ContentProvider> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::formats\0".as_ptr() as *const _,
+                c"notify::formats".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_formats_trampoline::<Self, F> as *const (),
                 )),
@@ -239,7 +234,7 @@ pub trait ContentProviderExt: IsA<ContentProvider> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::storable-formats\0".as_ptr() as *const _,
+                c"notify::storable-formats".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_storable_formats_trampoline::<Self, F> as *const (),
                 )),

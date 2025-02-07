@@ -23,12 +23,7 @@ impl GestureSingle {
     pub const NONE: Option<&'static GestureSingle> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::GestureSingle>> Sealed for T {}
-}
-
-pub trait GestureSingleExt: IsA<GestureSingle> + sealed::Sealed + 'static {
+pub trait GestureSingleExt: IsA<GestureSingle> + 'static {
     #[doc(alias = "gtk_gesture_single_get_button")]
     #[doc(alias = "get_button")]
     fn button(&self) -> u32 {
@@ -120,7 +115,7 @@ pub trait GestureSingleExt: IsA<GestureSingle> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::button\0".as_ptr() as *const _,
+                c"notify::button".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_button_trampoline::<Self, F> as *const (),
                 )),
@@ -146,7 +141,7 @@ pub trait GestureSingleExt: IsA<GestureSingle> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::exclusive\0".as_ptr() as *const _,
+                c"notify::exclusive".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_exclusive_trampoline::<Self, F> as *const (),
                 )),
@@ -172,7 +167,7 @@ pub trait GestureSingleExt: IsA<GestureSingle> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::touch-only\0".as_ptr() as *const _,
+                c"notify::touch-only".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_touch_only_trampoline::<Self, F> as *const (),
                 )),

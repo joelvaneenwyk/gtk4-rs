@@ -41,7 +41,7 @@ impl EmojiChooser {
     pub fn connect_emoji_picked<F: Fn(&Self, &str) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn emoji_picked_trampoline<F: Fn(&EmojiChooser, &str) + 'static>(
             this: *mut ffi::GtkEmojiChooser,
-            text: *mut libc::c_char,
+            text: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -54,7 +54,7 @@ impl EmojiChooser {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"emoji-picked\0".as_ptr() as *const _,
+                c"emoji-picked".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     emoji_picked_trampoline::<F> as *const (),
                 )),
@@ -326,6 +326,7 @@ impl EmojiChooserBuilder {
     /// Build the [`EmojiChooser`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> EmojiChooser {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

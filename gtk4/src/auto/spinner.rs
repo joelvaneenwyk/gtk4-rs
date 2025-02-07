@@ -80,7 +80,7 @@ impl Spinner {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::spinning\0".as_ptr() as *const _,
+                c"notify::spinning".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_spinning_trampoline::<F> as *const (),
                 )),
@@ -306,6 +306,7 @@ impl SpinnerBuilder {
     /// Build the [`Spinner`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Spinner {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

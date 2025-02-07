@@ -23,7 +23,7 @@ See also:
 
 ## Minimum supported Rust version
 
-Currently, the minimum supported Rust version is `1.70`.
+Currently, the minimum supported Rust version is `1.80`.
 
 ## "Hello, World!" example program
 
@@ -153,7 +153,7 @@ users will have it installed.
 
 - The Rust API [Stable](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4)/[Development](https://gtk-rs.org/gtk4-rs/git/docs/gtk4/)
 - Book [Stable](https://gtk-rs.org/gtk4-rs/stable/latest/book)/[Development](https://gtk-rs.org/gtk4-rs/git/book)
-- [Examples](https://github.com/gtk-rs/gtk4-rs/tree/master/examples)
+- [Examples](https://github.com/gtk-rs/gtk4-rs/tree/main/examples)
 - [The C API](https://docs.gtk.org/gtk4/)
 - [GTK Installation Instructions](https://www.gtk.org/docs/installations/)
 
@@ -182,6 +182,7 @@ gtk = { git = "https://github.com/gtk-rs/gtk4-rs.git", package = "gtk4" }
 
 | Feature | Description |
 | ---     | ----------- |
+| `v4_18` | Enable the new APIs part of GTK 4.18 |
 | `v4_16` | Enable the new APIs part of GTK 4.16 |
 | `v4_14` | Enable the new APIs part of GTK 4.14 |
 | `v4_12` | Enable the new APIs part of GTK 4.12 |

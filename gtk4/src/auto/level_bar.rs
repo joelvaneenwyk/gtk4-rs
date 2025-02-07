@@ -179,7 +179,7 @@ impl LevelBar {
     ) -> SignalHandlerId {
         unsafe extern "C" fn offset_changed_trampoline<F: Fn(&LevelBar, &str) + 'static>(
             this: *mut ffi::GtkLevelBar,
-            name: *mut libc::c_char,
+            name: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -219,7 +219,7 @@ impl LevelBar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::inverted\0".as_ptr() as *const _,
+                c"notify::inverted".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_inverted_trampoline::<F> as *const (),
                 )),
@@ -242,7 +242,7 @@ impl LevelBar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::max-value\0".as_ptr() as *const _,
+                c"notify::max-value".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_max_value_trampoline::<F> as *const (),
                 )),
@@ -265,7 +265,7 @@ impl LevelBar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::min-value\0".as_ptr() as *const _,
+                c"notify::min-value".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_min_value_trampoline::<F> as *const (),
                 )),
@@ -288,7 +288,7 @@ impl LevelBar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::mode\0".as_ptr() as *const _,
+                c"notify::mode".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_mode_trampoline::<F> as *const (),
                 )),
@@ -311,7 +311,7 @@ impl LevelBar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::value\0".as_ptr() as *const _,
+                c"notify::value".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_value_trampoline::<F> as *const (),
                 )),
@@ -567,6 +567,7 @@ impl LevelBarBuilder {
     /// Build the [`LevelBar`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> LevelBar {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

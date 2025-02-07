@@ -138,16 +138,12 @@ impl MountOperationBuilder {
     /// Build the [`MountOperation`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> MountOperation {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::MountOperation>> Sealed for T {}
-}
-
-pub trait GtkMountOperationExt: IsA<MountOperation> + sealed::Sealed + 'static {
+pub trait GtkMountOperationExt: IsA<MountOperation> + 'static {
     #[doc(alias = "gtk_mount_operation_get_display")]
     #[doc(alias = "get_display")]
     fn display(&self) -> gdk::Display {
@@ -217,7 +213,7 @@ pub trait GtkMountOperationExt: IsA<MountOperation> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::display\0".as_ptr() as *const _,
+                c"notify::display".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_display_trampoline::<Self, F> as *const (),
                 )),
@@ -243,7 +239,7 @@ pub trait GtkMountOperationExt: IsA<MountOperation> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::is-showing\0".as_ptr() as *const _,
+                c"notify::is-showing".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_is_showing_trampoline::<Self, F> as *const (),
                 )),
@@ -269,7 +265,7 @@ pub trait GtkMountOperationExt: IsA<MountOperation> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::parent\0".as_ptr() as *const _,
+                c"notify::parent".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_parent_trampoline::<Self, F> as *const (),
                 )),

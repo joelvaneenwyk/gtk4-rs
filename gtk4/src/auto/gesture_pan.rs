@@ -58,7 +58,7 @@ impl GesturePan {
         unsafe extern "C" fn pan_trampoline<F: Fn(&GesturePan, PanDirection, f64) + 'static>(
             this: *mut ffi::GtkGesturePan,
             direction: ffi::GtkPanDirection,
-            offset: libc::c_double,
+            offset: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -68,7 +68,7 @@ impl GesturePan {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"pan\0".as_ptr() as *const _,
+                c"pan".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     pan_trampoline::<F> as *const (),
                 )),
@@ -91,7 +91,7 @@ impl GesturePan {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::orientation\0".as_ptr() as *const _,
+                c"notify::orientation".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_orientation_trampoline::<F> as *const (),
                 )),
@@ -179,6 +179,7 @@ impl GesturePanBuilder {
     /// Build the [`GesturePan`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> GesturePan {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

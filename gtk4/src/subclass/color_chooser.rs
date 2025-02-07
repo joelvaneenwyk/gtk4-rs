@@ -1,8 +1,7 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for implementing the [`ColorChooser`](crate::ColorChooser)
-//! interface.
+//! Traits intended for implementing the [`ColorChooser`] interface.
 
 use gdk::RGBA;
 use glib::translate::*;
@@ -11,7 +10,7 @@ use crate::{ffi, prelude::*, subclass::prelude::*, ColorChooser, Orientation};
 
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait ColorChooserImpl: ObjectImpl {
+pub trait ColorChooserImpl: ObjectImpl + ObjectSubclass<Type: IsA<ColorChooser>> {
     fn add_palette(&self, orientation: Orientation, colors_per_line: i32, colors: &[RGBA]) {
         self.parent_add_palette(orientation, colors_per_line, colors);
     }
@@ -25,14 +24,9 @@ pub trait ColorChooserImpl: ObjectImpl {
     fn set_rgba(&self, rgba: RGBA);
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::ColorChooserImplExt> Sealed for T {}
-}
-
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait ColorChooserImplExt: sealed::Sealed + ObjectSubclass {
+pub trait ColorChooserImplExt: ColorChooserImpl {
     fn parent_add_palette(&self, orientation: Orientation, colors_per_line: i32, colors: &[RGBA]) {
         unsafe {
             let type_data = Self::type_data();

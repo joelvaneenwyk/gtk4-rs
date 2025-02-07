@@ -101,7 +101,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"accept\0".as_ptr() as *const _,
+                c"accept".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     accept_trampoline::<F> as *const (),
                 )),
@@ -120,8 +120,8 @@ impl DropTargetAsync {
         >(
             this: *mut ffi::GtkDropTargetAsync,
             drop: *mut gdk::ffi::GdkDrop,
-            x: libc::c_double,
-            y: libc::c_double,
+            x: std::ffi::c_double,
+            y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) -> gdk::ffi::GdkDragAction {
             let f: &F = &*(f as *const F);
@@ -131,7 +131,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drag-enter\0".as_ptr() as *const _,
+                c"drag-enter".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drag_enter_trampoline::<F> as *const (),
                 )),
@@ -156,7 +156,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drag-leave\0".as_ptr() as *const _,
+                c"drag-leave".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drag_leave_trampoline::<F> as *const (),
                 )),
@@ -175,8 +175,8 @@ impl DropTargetAsync {
         >(
             this: *mut ffi::GtkDropTargetAsync,
             drop: *mut gdk::ffi::GdkDrop,
-            x: libc::c_double,
-            y: libc::c_double,
+            x: std::ffi::c_double,
+            y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) -> gdk::ffi::GdkDragAction {
             let f: &F = &*(f as *const F);
@@ -186,7 +186,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drag-motion\0".as_ptr() as *const _,
+                c"drag-motion".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drag_motion_trampoline::<F> as *const (),
                 )),
@@ -205,8 +205,8 @@ impl DropTargetAsync {
         >(
             this: *mut ffi::GtkDropTargetAsync,
             drop: *mut gdk::ffi::GdkDrop,
-            x: libc::c_double,
-            y: libc::c_double,
+            x: std::ffi::c_double,
+            y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) -> glib::ffi::gboolean {
             let f: &F = &*(f as *const F);
@@ -216,7 +216,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"drop\0".as_ptr() as *const _,
+                c"drop".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     drop_trampoline::<F> as *const (),
                 )),
@@ -239,7 +239,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::actions\0".as_ptr() as *const _,
+                c"notify::actions".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_actions_trampoline::<F> as *const (),
                 )),
@@ -262,7 +262,7 @@ impl DropTargetAsync {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::formats\0".as_ptr() as *const _,
+                c"notify::formats".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_formats_trampoline::<F> as *const (),
                 )),
@@ -332,6 +332,7 @@ impl DropTargetAsyncBuilder {
     /// Build the [`DropTargetAsync`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> DropTargetAsync {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

@@ -44,8 +44,8 @@ impl GestureRotate {
     pub fn connect_angle_changed<F: Fn(&Self, f64, f64) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn angle_changed_trampoline<F: Fn(&GestureRotate, f64, f64) + 'static>(
             this: *mut ffi::GtkGestureRotate,
-            angle: libc::c_double,
-            angle_delta: libc::c_double,
+            angle: std::ffi::c_double,
+            angle_delta: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -55,7 +55,7 @@ impl GestureRotate {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"angle-changed\0".as_ptr() as *const _,
+                c"angle-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     angle_changed_trampoline::<F> as *const (),
                 )),
@@ -119,6 +119,7 @@ impl GestureRotateBuilder {
     /// Build the [`GestureRotate`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> GestureRotate {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

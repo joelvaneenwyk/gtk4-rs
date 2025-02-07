@@ -92,8 +92,8 @@ impl Statusbar {
     pub fn connect_text_popped<F: Fn(&Self, u32, &str) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn text_popped_trampoline<F: Fn(&Statusbar, u32, &str) + 'static>(
             this: *mut ffi::GtkStatusbar,
-            context_id: libc::c_uint,
-            text: *mut libc::c_char,
+            context_id: std::ffi::c_uint,
+            text: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -107,7 +107,7 @@ impl Statusbar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"text-popped\0".as_ptr() as *const _,
+                c"text-popped".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     text_popped_trampoline::<F> as *const (),
                 )),
@@ -121,8 +121,8 @@ impl Statusbar {
     pub fn connect_text_pushed<F: Fn(&Self, u32, &str) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn text_pushed_trampoline<F: Fn(&Statusbar, u32, &str) + 'static>(
             this: *mut ffi::GtkStatusbar,
-            context_id: libc::c_uint,
-            text: *mut libc::c_char,
+            context_id: std::ffi::c_uint,
+            text: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -136,7 +136,7 @@ impl Statusbar {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"text-pushed\0".as_ptr() as *const _,
+                c"text-pushed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     text_pushed_trampoline::<F> as *const (),
                 )),
@@ -356,6 +356,7 @@ impl StatusbarBuilder {
     /// Build the [`Statusbar`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Statusbar {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

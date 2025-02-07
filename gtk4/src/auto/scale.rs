@@ -356,16 +356,12 @@ impl ScaleBuilder {
     /// Build the [`Scale`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Scale {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Scale>> Sealed for T {}
-}
-
-pub trait ScaleExt: IsA<Scale> + sealed::Sealed + 'static {
+pub trait ScaleExt: IsA<Scale> + 'static {
     #[doc(alias = "gtk_scale_add_mark")]
     fn add_mark(&self, value: f64, position: PositionType, markup: Option<&str>) {
         unsafe {
@@ -462,9 +458,9 @@ pub trait ScaleExt: IsA<Scale> + sealed::Sealed + 'static {
         let func_data: Box_<P> = Box_::new(func);
         unsafe extern "C" fn func_func<P: Fn(&Scale, f64) -> String + 'static>(
             scale: *mut ffi::GtkScale,
-            value: libc::c_double,
+            value: std::ffi::c_double,
             user_data: glib::ffi::gpointer,
-        ) -> *mut libc::c_char {
+        ) -> *mut std::ffi::c_char {
             let scale = from_glib_borrow(scale);
             let callback = &*(user_data as *mut P);
             (*callback)(&scale, value).to_glib_full()
@@ -517,7 +513,7 @@ pub trait ScaleExt: IsA<Scale> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::digits\0".as_ptr() as *const _,
+                c"notify::digits".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_digits_trampoline::<Self, F> as *const (),
                 )),
@@ -540,7 +536,7 @@ pub trait ScaleExt: IsA<Scale> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::draw-value\0".as_ptr() as *const _,
+                c"notify::draw-value".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_draw_value_trampoline::<Self, F> as *const (),
                 )),
@@ -563,7 +559,7 @@ pub trait ScaleExt: IsA<Scale> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::has-origin\0".as_ptr() as *const _,
+                c"notify::has-origin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_has_origin_trampoline::<Self, F> as *const (),
                 )),
@@ -586,7 +582,7 @@ pub trait ScaleExt: IsA<Scale> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::value-pos\0".as_ptr() as *const _,
+                c"notify::value-pos".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_value_pos_trampoline::<Self, F> as *const (),
                 )),

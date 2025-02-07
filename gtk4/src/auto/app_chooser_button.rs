@@ -191,7 +191,7 @@ impl AppChooserButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"activate\0".as_ptr() as *const _,
+                c"activate".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     activate_trampoline::<F> as *const (),
                 )),
@@ -219,7 +219,7 @@ impl AppChooserButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"changed\0".as_ptr() as *const _,
+                c"changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     changed_trampoline::<F> as *const (),
                 )),
@@ -238,7 +238,7 @@ impl AppChooserButton {
             F: Fn(&AppChooserButton, &str) + 'static,
         >(
             this: *mut ffi::GtkAppChooserButton,
-            item_name: *mut libc::c_char,
+            item_name: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -279,7 +279,7 @@ impl AppChooserButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::heading\0".as_ptr() as *const _,
+                c"notify::heading".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_heading_trampoline::<F> as *const (),
                 )),
@@ -302,7 +302,7 @@ impl AppChooserButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::modal\0".as_ptr() as *const _,
+                c"notify::modal".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_modal_trampoline::<F> as *const (),
                 )),
@@ -330,7 +330,7 @@ impl AppChooserButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::show-default-item\0".as_ptr() as *const _,
+                c"notify::show-default-item".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_show_default_item_trampoline::<F> as *const (),
                 )),
@@ -355,7 +355,7 @@ impl AppChooserButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::show-dialog-item\0".as_ptr() as *const _,
+                c"notify::show-dialog-item".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_show_dialog_item_trampoline::<F> as *const (),
                 )),
@@ -607,6 +607,7 @@ impl AppChooserButtonBuilder {
     /// Build the [`AppChooserButton`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> AppChooserButton {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

@@ -2197,6 +2197,13 @@ const RUST_LAYOUTS: &[(&str, Layout)] = &[
         },
     ),
     (
+        "GtkTextBufferNotifyFlags",
+        Layout {
+            size: size_of::<GtkTextBufferNotifyFlags>(),
+            alignment: align_of::<GtkTextBufferNotifyFlags>(),
+        },
+    ),
+    (
         "GtkTextChildAnchor",
         Layout {
             size: size_of::<GtkTextChildAnchor>(),
@@ -2989,6 +2996,7 @@ const RUST_CONSTANTS: &[(&str, &str)] = &[
     ("(gint) GTK_GRAPHICS_OFFLOAD_ENABLED", "0"),
     ("(guint) GTK_ICON_LOOKUP_FORCE_REGULAR", "1"),
     ("(guint) GTK_ICON_LOOKUP_FORCE_SYMBOLIC", "2"),
+    ("(guint) GTK_ICON_LOOKUP_NONE", "0"),
     ("(guint) GTK_ICON_LOOKUP_PRELOAD", "4"),
     ("(gint) GTK_ICON_SIZE_INHERIT", "0"),
     ("(gint) GTK_ICON_SIZE_LARGE", "2"),
@@ -3413,6 +3421,10 @@ const RUST_CONSTANTS: &[(&str, &str)] = &[
     ("(gint) GTK_SYSTEM_SETTING_FONT_CONFIG", "2"),
     ("(gint) GTK_SYSTEM_SETTING_FONT_NAME", "1"),
     ("(gint) GTK_SYSTEM_SETTING_ICON_THEME", "4"),
+    ("(guint) GTK_TEXT_BUFFER_NOTIFY_AFTER_DELETE", "8"),
+    ("(guint) GTK_TEXT_BUFFER_NOTIFY_AFTER_INSERT", "2"),
+    ("(guint) GTK_TEXT_BUFFER_NOTIFY_BEFORE_DELETE", "4"),
+    ("(guint) GTK_TEXT_BUFFER_NOTIFY_BEFORE_INSERT", "1"),
     ("(gint) GTK_TEXT_DIR_LTR", "1"),
     ("(gint) GTK_TEXT_DIR_NONE", "0"),
     ("(gint) GTK_TEXT_DIR_RTL", "2"),

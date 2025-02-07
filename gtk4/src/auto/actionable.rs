@@ -23,12 +23,7 @@ impl Actionable {
     pub const NONE: Option<&'static Actionable> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Actionable>> Sealed for T {}
-}
-
-pub trait ActionableExt: IsA<Actionable> + sealed::Sealed + 'static {
+pub trait ActionableExt: IsA<Actionable> + 'static {
     #[doc(alias = "gtk_actionable_get_action_name")]
     #[doc(alias = "get_action_name")]
     #[doc(alias = "action-name")]
@@ -100,7 +95,7 @@ pub trait ActionableExt: IsA<Actionable> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::action-name\0".as_ptr() as *const _,
+                c"notify::action-name".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_action_name_trampoline::<Self, F> as *const (),
                 )),
@@ -126,7 +121,7 @@ pub trait ActionableExt: IsA<Actionable> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::action-target\0".as_ptr() as *const _,
+                c"notify::action-target".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_action_target_trampoline::<Self, F> as *const (),
                 )),

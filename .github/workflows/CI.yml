@@ -1,11 +1,12 @@
 on:
   push:
     branches:
-      - "master"
+      - "main"
     paths:
       - ".github/workflows/CI.yml"
       - "examples/**"
       - "gdk4/**"
+      - "gdk4-macos/**"
       - "gdk4-wayland/**"
       - "gdk4-win32/**"
       - "gdk4-x11/**"
@@ -17,6 +18,7 @@ on:
       - ".github/workflows/CI.yml"
       - "examples/**"
       - "gdk4/**"
+      - "gdk4-macos/**"
       - "gdk4-wayland/**"
       - "gdk4-win32/**"
       - "gdk4-x11/**"
@@ -39,11 +41,11 @@ jobs:
           - stable
           - beta
           - nightly
-          - "1.70"
+          - "1.80"
         conf:
           - {
               name: "gtk4",
-              features: "v4_16,xml_validation,blueprint",
+              features: "v4_18,xml_validation,blueprint",
               test_sys: false,
             }
           - { name: "gsk4", features: "v4_14,broadway,vulkan", test_sys: true }
@@ -118,8 +120,8 @@ jobs:
   cargo-deny:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: EmbarkStudios/cargo-deny-action@v2
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
 
   regen_check:
     name: regen checker
@@ -166,6 +168,7 @@ jobs:
           - { name: "gtk4", is_macros_crate: false }
           - { name: "gdk4", is_macros_crate: false }
           - { name: "gsk4", is_macros_crate: false }
+          - { name: "gdk4-macos", is_macros_crate: false }
           - { name: "gdk4-x11", is_macros_crate: false }
           - { name: "gdk4-wayland", is_macros_crate: false }
           - { name: "gdk4-win32", is_macros_crate: false }
@@ -175,7 +178,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: gtk-rs/checker
-          ref: master
+          ref: main
           path: checker
       - working-directory: checker
         run: cargo build --release

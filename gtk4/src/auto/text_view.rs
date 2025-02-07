@@ -441,16 +441,12 @@ impl TextViewBuilder {
     /// Build the [`TextView`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> TextView {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::TextView>> Sealed for T {}
-}
-
-pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
+pub trait TextViewExt: IsA<TextView> + 'static {
     #[doc(alias = "gtk_text_view_add_child_at_anchor")]
     fn add_child_at_anchor(&self, child: &impl IsA<Widget>, anchor: &impl IsA<TextChildAnchor>) {
         unsafe {
@@ -840,6 +836,23 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
     #[doc(alias = "top-margin")]
     fn top_margin(&self) -> i32 {
         unsafe { ffi::gtk_text_view_get_top_margin(self.as_ref().to_glib_none().0) }
+    }
+
+    #[cfg(feature = "v4_18")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "v4_18")))]
+    #[doc(alias = "gtk_text_view_get_visible_offset")]
+    #[doc(alias = "get_visible_offset")]
+    fn visible_offset(&self) -> (f64, f64) {
+        unsafe {
+            let mut x_offset = std::mem::MaybeUninit::uninit();
+            let mut y_offset = std::mem::MaybeUninit::uninit();
+            ffi::gtk_text_view_get_visible_offset(
+                self.as_ref().to_glib_none().0,
+                x_offset.as_mut_ptr(),
+                y_offset.as_mut_ptr(),
+            );
+            (x_offset.assume_init(), y_offset.assume_init())
+        }
     }
 
     #[doc(alias = "gtk_text_view_get_visible_rect")]
@@ -1250,7 +1263,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"backspace\0".as_ptr() as *const _,
+                c"backspace".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     backspace_trampoline::<Self, F> as *const (),
                 )),
@@ -1276,7 +1289,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"copy-clipboard\0".as_ptr() as *const _,
+                c"copy-clipboard".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     copy_clipboard_trampoline::<Self, F> as *const (),
                 )),
@@ -1302,7 +1315,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"cut-clipboard\0".as_ptr() as *const _,
+                c"cut-clipboard".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     cut_clipboard_trampoline::<Self, F> as *const (),
                 )),
@@ -1326,7 +1339,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
         >(
             this: *mut ffi::GtkTextView,
             type_: ffi::GtkDeleteType,
-            count: libc::c_int,
+            count: std::ffi::c_int,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -1340,7 +1353,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"delete-from-cursor\0".as_ptr() as *const _,
+                c"delete-from-cursor".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     delete_from_cursor_trampoline::<Self, F> as *const (),
                 )),
@@ -1387,7 +1400,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"extend-selection\0".as_ptr() as *const _,
+                c"extend-selection".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     extend_selection_trampoline::<Self, F> as *const (),
                 )),
@@ -1403,7 +1416,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             F: Fn(&P, &str) + 'static,
         >(
             this: *mut ffi::GtkTextView,
-            string: *mut libc::c_char,
+            string: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -1416,7 +1429,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"insert-at-cursor\0".as_ptr() as *const _,
+                c"insert-at-cursor".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     insert_at_cursor_trampoline::<Self, F> as *const (),
                 )),
@@ -1442,7 +1455,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"insert-emoji\0".as_ptr() as *const _,
+                c"insert-emoji".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     insert_emoji_trampoline::<Self, F> as *const (),
                 )),
@@ -1466,7 +1479,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
         >(
             this: *mut ffi::GtkTextView,
             step: ffi::GtkMovementStep,
-            count: libc::c_int,
+            count: std::ffi::c_int,
             extend_selection: glib::ffi::gboolean,
             f: glib::ffi::gpointer,
         ) {
@@ -1482,7 +1495,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"move-cursor\0".as_ptr() as *const _,
+                c"move-cursor".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     move_cursor_trampoline::<Self, F> as *const (),
                 )),
@@ -1506,7 +1519,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
         >(
             this: *mut ffi::GtkTextView,
             step: ffi::GtkScrollStep,
-            count: libc::c_int,
+            count: std::ffi::c_int,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -1520,7 +1533,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"move-viewport\0".as_ptr() as *const _,
+                c"move-viewport".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     move_viewport_trampoline::<Self, F> as *const (),
                 )),
@@ -1546,7 +1559,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"paste-clipboard\0".as_ptr() as *const _,
+                c"paste-clipboard".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     paste_clipboard_trampoline::<Self, F> as *const (),
                 )),
@@ -1566,7 +1579,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             F: Fn(&P, &str) + 'static,
         >(
             this: *mut ffi::GtkTextView,
-            preedit: *mut libc::c_char,
+            preedit: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -1579,7 +1592,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"preedit-changed\0".as_ptr() as *const _,
+                c"preedit-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     preedit_changed_trampoline::<Self, F> as *const (),
                 )),
@@ -1609,7 +1622,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"select-all\0".as_ptr() as *const _,
+                c"select-all".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     select_all_trampoline::<Self, F> as *const (),
                 )),
@@ -1635,7 +1648,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"set-anchor\0".as_ptr() as *const _,
+                c"set-anchor".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     set_anchor_trampoline::<Self, F> as *const (),
                 )),
@@ -1664,7 +1677,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"toggle-cursor-visible\0".as_ptr() as *const _,
+                c"toggle-cursor-visible".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     toggle_cursor_visible_trampoline::<Self, F> as *const (),
                 )),
@@ -1690,7 +1703,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"toggle-overwrite\0".as_ptr() as *const _,
+                c"toggle-overwrite".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     toggle_overwrite_trampoline::<Self, F> as *const (),
                 )),
@@ -1720,7 +1733,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::accepts-tab\0".as_ptr() as *const _,
+                c"notify::accepts-tab".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_accepts_tab_trampoline::<Self, F> as *const (),
                 )),
@@ -1746,7 +1759,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::bottom-margin\0".as_ptr() as *const _,
+                c"notify::bottom-margin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_bottom_margin_trampoline::<Self, F> as *const (),
                 )),
@@ -1769,7 +1782,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::buffer\0".as_ptr() as *const _,
+                c"notify::buffer".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_buffer_trampoline::<Self, F> as *const (),
                 )),
@@ -1795,7 +1808,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::cursor-visible\0".as_ptr() as *const _,
+                c"notify::cursor-visible".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_cursor_visible_trampoline::<Self, F> as *const (),
                 )),
@@ -1818,7 +1831,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::editable\0".as_ptr() as *const _,
+                c"notify::editable".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_editable_trampoline::<Self, F> as *const (),
                 )),
@@ -1841,7 +1854,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::extra-menu\0".as_ptr() as *const _,
+                c"notify::extra-menu".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_extra_menu_trampoline::<Self, F> as *const (),
                 )),
@@ -1864,7 +1877,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::im-module\0".as_ptr() as *const _,
+                c"notify::im-module".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_im_module_trampoline::<Self, F> as *const (),
                 )),
@@ -1887,7 +1900,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::indent\0".as_ptr() as *const _,
+                c"notify::indent".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_indent_trampoline::<Self, F> as *const (),
                 )),
@@ -1913,7 +1926,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::input-hints\0".as_ptr() as *const _,
+                c"notify::input-hints".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_input_hints_trampoline::<Self, F> as *const (),
                 )),
@@ -1939,7 +1952,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::input-purpose\0".as_ptr() as *const _,
+                c"notify::input-purpose".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_input_purpose_trampoline::<Self, F> as *const (),
                 )),
@@ -1965,7 +1978,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::justification\0".as_ptr() as *const _,
+                c"notify::justification".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_justification_trampoline::<Self, F> as *const (),
                 )),
@@ -1991,7 +2004,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::left-margin\0".as_ptr() as *const _,
+                c"notify::left-margin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_left_margin_trampoline::<Self, F> as *const (),
                 )),
@@ -2014,7 +2027,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::monospace\0".as_ptr() as *const _,
+                c"notify::monospace".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_monospace_trampoline::<Self, F> as *const (),
                 )),
@@ -2037,7 +2050,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::overwrite\0".as_ptr() as *const _,
+                c"notify::overwrite".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_overwrite_trampoline::<Self, F> as *const (),
                 )),
@@ -2063,7 +2076,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::pixels-above-lines\0".as_ptr() as *const _,
+                c"notify::pixels-above-lines".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_pixels_above_lines_trampoline::<Self, F> as *const (),
                 )),
@@ -2089,7 +2102,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::pixels-below-lines\0".as_ptr() as *const _,
+                c"notify::pixels-below-lines".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_pixels_below_lines_trampoline::<Self, F> as *const (),
                 )),
@@ -2115,7 +2128,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::pixels-inside-wrap\0".as_ptr() as *const _,
+                c"notify::pixels-inside-wrap".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_pixels_inside_wrap_trampoline::<Self, F> as *const (),
                 )),
@@ -2141,7 +2154,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::right-margin\0".as_ptr() as *const _,
+                c"notify::right-margin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_right_margin_trampoline::<Self, F> as *const (),
                 )),
@@ -2164,7 +2177,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::tabs\0".as_ptr() as *const _,
+                c"notify::tabs".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_tabs_trampoline::<Self, F> as *const (),
                 )),
@@ -2187,7 +2200,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::top-margin\0".as_ptr() as *const _,
+                c"notify::top-margin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_top_margin_trampoline::<Self, F> as *const (),
                 )),
@@ -2210,7 +2223,7 @@ pub trait TextViewExt: IsA<TextView> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::wrap-mode\0".as_ptr() as *const _,
+                c"notify::wrap-mode".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_wrap_mode_trampoline::<Self, F> as *const (),
                 )),

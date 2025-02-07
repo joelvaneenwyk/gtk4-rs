@@ -121,7 +121,7 @@ impl CellRendererToggle {
     pub fn connect_toggled<F: Fn(&Self, TreePath) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn toggled_trampoline<F: Fn(&CellRendererToggle, TreePath) + 'static>(
             this: *mut ffi::GtkCellRendererToggle,
-            path: *mut libc::c_char,
+            path: *mut std::ffi::c_char,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -132,7 +132,7 @@ impl CellRendererToggle {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"toggled\0".as_ptr() as *const _,
+                c"toggled".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     toggled_trampoline::<F> as *const (),
                 )),
@@ -155,7 +155,7 @@ impl CellRendererToggle {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::activatable\0".as_ptr() as *const _,
+                c"notify::activatable".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_activatable_trampoline::<F> as *const (),
                 )),
@@ -178,7 +178,7 @@ impl CellRendererToggle {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::active\0".as_ptr() as *const _,
+                c"notify::active".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_active_trampoline::<F> as *const (),
                 )),
@@ -203,7 +203,7 @@ impl CellRendererToggle {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::inconsistent\0".as_ptr() as *const _,
+                c"notify::inconsistent".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_inconsistent_trampoline::<F> as *const (),
                 )),
@@ -226,7 +226,7 @@ impl CellRendererToggle {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::radio\0".as_ptr() as *const _,
+                c"notify::radio".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_radio_trampoline::<F> as *const (),
                 )),
@@ -376,6 +376,7 @@ impl CellRendererToggleBuilder {
     /// Build the [`CellRendererToggle`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> CellRendererToggle {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

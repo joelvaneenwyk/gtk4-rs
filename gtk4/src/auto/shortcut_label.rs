@@ -97,7 +97,7 @@ impl ShortcutLabel {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::accelerator\0".as_ptr() as *const _,
+                c"notify::accelerator".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_accelerator_trampoline::<F> as *const (),
                 )),
@@ -120,7 +120,7 @@ impl ShortcutLabel {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::disabled-text\0".as_ptr() as *const _,
+                c"notify::disabled-text".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_disabled_text_trampoline::<F> as *const (),
                 )),
@@ -352,6 +352,7 @@ impl ShortcutLabelBuilder {
     /// Build the [`ShortcutLabel`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> ShortcutLabel {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

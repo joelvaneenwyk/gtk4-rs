@@ -23,12 +23,7 @@ impl EventController {
     pub const NONE: Option<&'static EventController> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::EventController>> Sealed for T {}
-}
-
-pub trait EventControllerExt: IsA<EventController> + sealed::Sealed + 'static {
+pub trait EventControllerExt: IsA<EventController> + 'static {
     #[doc(alias = "gtk_event_controller_get_current_event")]
     #[doc(alias = "get_current_event")]
     fn current_event(&self) -> Option<gdk::Event> {
@@ -176,7 +171,7 @@ pub trait EventControllerExt: IsA<EventController> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::name\0".as_ptr() as *const _,
+                c"notify::name".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_name_trampoline::<Self, F> as *const (),
                 )),
@@ -202,7 +197,7 @@ pub trait EventControllerExt: IsA<EventController> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::propagation-limit\0".as_ptr() as *const _,
+                c"notify::propagation-limit".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_propagation_limit_trampoline::<Self, F> as *const (),
                 )),
@@ -228,7 +223,7 @@ pub trait EventControllerExt: IsA<EventController> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::propagation-phase\0".as_ptr() as *const _,
+                c"notify::propagation-phase".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_propagation_phase_trampoline::<Self, F> as *const (),
                 )),
@@ -254,7 +249,7 @@ pub trait EventControllerExt: IsA<EventController> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::widget\0".as_ptr() as *const _,
+                c"notify::widget".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_widget_trampoline::<Self, F> as *const (),
                 )),

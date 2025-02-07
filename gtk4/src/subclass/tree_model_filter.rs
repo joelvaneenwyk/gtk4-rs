@@ -1,7 +1,7 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for subclassing [`TreeModelFilter`](crate::TreeModelFilter).
+//! Traits intended for subclassing [`TreeModelFilter`].
 
 use glib::{translate::*, Value};
 
@@ -9,7 +9,7 @@ use crate::{ffi, prelude::*, subclass::prelude::*, TreeIter, TreeModel, TreeMode
 
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait TreeModelFilterImpl: TreeModelFilterImplExt + ObjectImpl {
+pub trait TreeModelFilterImpl: ObjectImpl + ObjectSubclass<Type: IsA<TreeModelFilter>> {
     fn visible<M: IsA<TreeModel>>(&self, child_model: &M, iter: &TreeIter) -> bool {
         self.parent_visible(child_model, iter)
     }
@@ -25,14 +25,9 @@ pub trait TreeModelFilterImpl: TreeModelFilterImplExt + ObjectImpl {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::TreeModelFilterImplExt> Sealed for T {}
-}
-
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait TreeModelFilterImplExt: sealed::Sealed + ObjectSubclass {
+pub trait TreeModelFilterImplExt: TreeModelFilterImpl {
     // Whether the row indicated by iter is visible
     fn parent_visible<M: IsA<TreeModel>>(&self, child_model: &M, iter: &TreeIter) -> bool {
         unsafe {

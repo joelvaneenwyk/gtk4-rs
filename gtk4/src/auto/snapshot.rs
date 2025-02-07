@@ -31,12 +31,7 @@ impl Default for Snapshot {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Snapshot>> Sealed for T {}
-}
-
-pub trait SnapshotExt: IsA<Snapshot> + sealed::Sealed + 'static {
+pub trait SnapshotExt: IsA<Snapshot> + 'static {
     #[doc(alias = "gtk_snapshot_append_cairo")]
     fn append_cairo(&self, bounds: &graphene::Rect) -> cairo::Context {
         unsafe {
@@ -297,6 +292,27 @@ pub trait SnapshotExt: IsA<Snapshot> + sealed::Sealed + 'static {
                 texture.as_ref().to_glib_none().0,
                 bounds.to_glib_none().0,
             );
+        }
+    }
+
+    #[doc(alias = "gtk_snapshot_free_to_node")]
+    #[doc(alias = "free_to_node")]
+    fn to_node(self) -> Option<gsk::RenderNode> {
+        unsafe {
+            from_glib_full(ffi::gtk_snapshot_free_to_node(
+                self.upcast().into_glib_ptr(),
+            ))
+        }
+    }
+
+    #[doc(alias = "gtk_snapshot_free_to_paintable")]
+    #[doc(alias = "free_to_paintable")]
+    fn to_paintable(self, size: Option<&graphene::Size>) -> Option<gdk::Paintable> {
+        unsafe {
+            from_glib_full(ffi::gtk_snapshot_free_to_paintable(
+                self.upcast().into_glib_ptr(),
+                size.to_glib_none().0,
+            ))
         }
     }
 
@@ -619,21 +635,6 @@ pub trait SnapshotExt: IsA<Snapshot> + sealed::Sealed + 'static {
                 factor_y,
                 factor_z,
             );
-        }
-    }
-
-    #[doc(alias = "gtk_snapshot_to_node")]
-    fn to_node(self) -> Option<gsk::RenderNode> {
-        unsafe { from_glib_full(ffi::gtk_snapshot_to_node(self.upcast().into_glib_ptr())) }
-    }
-
-    #[doc(alias = "gtk_snapshot_to_paintable")]
-    fn to_paintable(self, size: Option<&graphene::Size>) -> Option<gdk::Paintable> {
-        unsafe {
-            from_glib_full(ffi::gtk_snapshot_to_paintable(
-                self.upcast().into_glib_ptr(),
-                size.to_glib_none().0,
-            ))
         }
     }
 

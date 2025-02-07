@@ -11,7 +11,8 @@ pub type PinnedFuture<T> = Pin<Box<dyn Future<Output = T>>>;
 glib::wrapper! {
     /// Public type for the `BaseButton` instances.
     pub struct BaseButton(ObjectSubclass<imp::BaseButton>)
-        @extends gtk::Widget, gtk::Button;
+        @extends gtk::Widget, gtk::Button,
+        @implements gtk::Accessible, gtk::Actionable, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl Default for BaseButton {
@@ -60,7 +61,7 @@ impl<O: IsA<BaseButton>> BaseButtonExt for O {}
 /// implement.
 ///
 /// See `derived_button/imp.rs` for how to override virtual methods.
-pub trait BaseButtonImpl: ButtonImpl {
+pub trait BaseButtonImpl: ButtonImpl + ObjectSubclass<Type: IsA<BaseButton>> {
     /// Default implementation of a virtual method.
     ///
     /// This always calls into the implementation of the parent class so that if

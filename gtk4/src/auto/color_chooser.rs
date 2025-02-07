@@ -24,12 +24,7 @@ impl ColorChooser {
     pub const NONE: Option<&'static ColorChooser> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::ColorChooser>> Sealed for T {}
-}
-
-pub trait ColorChooserExt: IsA<ColorChooser> + sealed::Sealed + 'static {
+pub trait ColorChooserExt: IsA<ColorChooser> + 'static {
     #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
     #[allow(deprecated)]
     #[doc(alias = "gtk_color_chooser_get_rgba")]
@@ -102,7 +97,7 @@ pub trait ColorChooserExt: IsA<ColorChooser> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"color-activated\0".as_ptr() as *const _,
+                c"color-activated".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     color_activated_trampoline::<Self, F> as *const (),
                 )),
@@ -126,7 +121,7 @@ pub trait ColorChooserExt: IsA<ColorChooser> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::rgba\0".as_ptr() as *const _,
+                c"notify::rgba".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_rgba_trampoline::<Self, F> as *const (),
                 )),
@@ -153,7 +148,7 @@ pub trait ColorChooserExt: IsA<ColorChooser> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::use-alpha\0".as_ptr() as *const _,
+                c"notify::use-alpha".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_use_alpha_trampoline::<Self, F> as *const (),
                 )),

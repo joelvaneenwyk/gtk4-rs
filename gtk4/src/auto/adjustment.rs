@@ -115,16 +115,12 @@ impl AdjustmentBuilder {
     /// Build the [`Adjustment`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Adjustment {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Adjustment>> Sealed for T {}
-}
-
-pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
+pub trait AdjustmentExt: IsA<Adjustment> + 'static {
     #[doc(alias = "gtk_adjustment_clamp_page")]
     fn clamp_page(&self, lower: f64, upper: f64) {
         unsafe {
@@ -261,7 +257,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"changed\0".as_ptr() as *const _,
+                c"changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     changed_trampoline::<Self, F> as *const (),
                 )),
@@ -283,7 +279,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"value-changed\0".as_ptr() as *const _,
+                c"value-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     value_changed_trampoline::<Self, F> as *const (),
                 )),
@@ -306,7 +302,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::lower\0".as_ptr() as *const _,
+                c"notify::lower".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_lower_trampoline::<Self, F> as *const (),
                 )),
@@ -332,7 +328,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::page-increment\0".as_ptr() as *const _,
+                c"notify::page-increment".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_page_increment_trampoline::<Self, F> as *const (),
                 )),
@@ -358,7 +354,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::page-size\0".as_ptr() as *const _,
+                c"notify::page-size".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_page_size_trampoline::<Self, F> as *const (),
                 )),
@@ -384,7 +380,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::step-increment\0".as_ptr() as *const _,
+                c"notify::step-increment".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_step_increment_trampoline::<Self, F> as *const (),
                 )),
@@ -407,7 +403,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::upper\0".as_ptr() as *const _,
+                c"notify::upper".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_upper_trampoline::<Self, F> as *const (),
                 )),
@@ -430,7 +426,7 @@ pub trait AdjustmentExt: IsA<Adjustment> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::value\0".as_ptr() as *const _,
+                c"notify::value".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_value_trampoline::<Self, F> as *const (),
                 )),

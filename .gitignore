@@ -4,16 +4,6 @@ doc/
 configure.in
 config.log
 config.status
-*.dylib
-.rust
-*.so
-*.o
-*.swp
-book/book
-.vscode
-*.log
-**/**/docs.md
-**~
 
 # pixi environments
 .pixi
@@ -26,3 +16,15 @@ builddir/
 .build/
 .cspell/
 .git/
+
+*.dylib
+.rust
+*.so
+*.o
+*.swp
+book/book
+.vscode
+*.log
+**/**/docs.md
+**~
+.idea

@@ -70,16 +70,12 @@ impl IMMulticontextBuilder {
     /// Build the [`IMMulticontext`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> IMMulticontext {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::IMMulticontext>> Sealed for T {}
-}
-
-pub trait IMMulticontextExt: IsA<IMMulticontext> + sealed::Sealed + 'static {
+pub trait IMMulticontextExt: IsA<IMMulticontext> + 'static {
     #[doc(alias = "gtk_im_multicontext_get_context_id")]
     #[doc(alias = "get_context_id")]
     fn context_id(&self) -> glib::GString {

@@ -1,8 +1,7 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for implementing the [`BuilderScope`](crate::BuilderScope)
-//! interface.
+//! Traits intended for implementing the [`BuilderScope`] interface.
 
 use glib::{translate::*, GString};
 
@@ -11,11 +10,11 @@ use crate::{
     BuilderScope,
 };
 
-pub trait BuilderCScopeImpl: BuilderScopeImpl {}
+pub trait BuilderCScopeImpl: BuilderScopeImpl + ObjectSubclass<Type: IsA<BuilderCScope>> {}
 
 unsafe impl<T: BuilderCScopeImpl> IsSubclassable<T> for BuilderCScope {}
 
-pub trait BuilderScopeImpl: ObjectImpl {
+pub trait BuilderScopeImpl: ObjectImpl + ObjectSubclass<Type: IsA<BuilderScope>> {
     #[doc(alias = "get_type_from_name")]
     fn type_from_name(&self, builder: &Builder, type_name: &str) -> glib::Type {
         self.parent_type_from_name(builder, type_name)
@@ -35,12 +34,7 @@ pub trait BuilderScopeImpl: ObjectImpl {
     ) -> Result<glib::Closure, glib::Error>;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::BuilderScopeImplExt> Sealed for T {}
-}
-
-pub trait BuilderScopeImplExt: sealed::Sealed + ObjectSubclass {
+pub trait BuilderScopeImplExt: BuilderScopeImpl {
     fn parent_type_from_name(&self, builder: &Builder, type_name: &str) -> glib::Type {
         unsafe {
             let type_data = Self::type_data();

@@ -73,8 +73,8 @@ impl EventControllerScroll {
             F: Fn(&EventControllerScroll, f64, f64) + 'static,
         >(
             this: *mut ffi::GtkEventControllerScroll,
-            vel_x: libc::c_double,
-            vel_y: libc::c_double,
+            vel_x: std::ffi::c_double,
+            vel_y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -84,7 +84,7 @@ impl EventControllerScroll {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"decelerate\0".as_ptr() as *const _,
+                c"decelerate".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     decelerate_trampoline::<F> as *const (),
                 )),
@@ -102,8 +102,8 @@ impl EventControllerScroll {
             F: Fn(&EventControllerScroll, f64, f64) -> glib::Propagation + 'static,
         >(
             this: *mut ffi::GtkEventControllerScroll,
-            dx: libc::c_double,
-            dy: libc::c_double,
+            dx: std::ffi::c_double,
+            dy: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) -> glib::ffi::gboolean {
             let f: &F = &*(f as *const F);
@@ -113,7 +113,7 @@ impl EventControllerScroll {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"scroll\0".as_ptr() as *const _,
+                c"scroll".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     scroll_trampoline::<F> as *const (),
                 )),
@@ -135,7 +135,7 @@ impl EventControllerScroll {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"scroll-begin\0".as_ptr() as *const _,
+                c"scroll-begin".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     scroll_begin_trampoline::<F> as *const (),
                 )),
@@ -157,7 +157,7 @@ impl EventControllerScroll {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"scroll-end\0".as_ptr() as *const _,
+                c"scroll-end".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     scroll_end_trampoline::<F> as *const (),
                 )),
@@ -180,7 +180,7 @@ impl EventControllerScroll {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::flags\0".as_ptr() as *const _,
+                c"notify::flags".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_flags_trampoline::<F> as *const (),
                 )),
@@ -244,6 +244,7 @@ impl EventControllerScrollBuilder {
     /// Build the [`EventControllerScroll`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> EventControllerScroll {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

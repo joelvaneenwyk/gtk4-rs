@@ -1,15 +1,16 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for subclassing [`CellArea`](crate::CellArea).
+//! Traits intended for subclassing [`CellArea`].
 
 use std::mem;
 
 use glib::{translate::*, ParamSpec, Value};
 
 use crate::{
-    ffi, prelude::*, subclass::prelude::*, CellArea, CellAreaContext, CellRenderer,
-    CellRendererState, DirectionType, SizeRequestMode, Snapshot, TreeIter, TreeModel, Widget,
+    ffi, prelude::*, subclass::prelude::*, Buildable, CellArea, CellAreaContext, CellLayout,
+    CellRenderer, CellRendererState, DirectionType, SizeRequestMode, Snapshot, TreeIter, TreeModel,
+    Widget,
 };
 
 #[derive(Debug)]
@@ -63,7 +64,9 @@ impl CellCallbackAllocate {
 
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait CellAreaImpl: CellAreaImplExt + ObjectImpl {
+pub trait CellAreaImpl:
+    ObjectImpl + ObjectSubclass<Type: IsA<CellArea> + IsA<Buildable> + IsA<CellLayout>>
+{
     fn cell_properties() -> &'static [ParamSpec] {
         &[]
     }
@@ -219,14 +222,9 @@ pub trait CellAreaImpl: CellAreaImplExt + ObjectImpl {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::CellAreaImplExt> Sealed for T {}
-}
-
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait CellAreaImplExt: sealed::Sealed + ObjectSubclass {
+pub trait CellAreaImplExt: CellAreaImpl {
     // Returns true if the area was successfully activated
     fn parent_activate<P: IsA<CellAreaContext>, W: IsA<Widget>>(
         &self,
@@ -956,4 +954,4 @@ pub unsafe trait CellAreaClassExt: ClassStruct {
     }
 }
 
-unsafe impl<T: ClassStruct> CellAreaClassExt for T where T::Type: CellAreaImpl {}
+unsafe impl<T: ClassStruct> CellAreaClassExt for T {}

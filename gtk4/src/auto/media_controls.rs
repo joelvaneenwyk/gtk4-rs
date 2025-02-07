@@ -78,7 +78,7 @@ impl MediaControls {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::media-stream\0".as_ptr() as *const _,
+                c"notify::media-stream".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_media_stream_trampoline::<F> as *const (),
                 )),
@@ -306,6 +306,7 @@ impl MediaControlsBuilder {
     /// Build the [`MediaControls`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> MediaControls {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

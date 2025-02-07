@@ -120,7 +120,7 @@ impl BoxLayout {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::baseline-child\0".as_ptr() as *const _,
+                c"notify::baseline-child".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_baseline_child_trampoline::<F> as *const (),
                 )),
@@ -146,7 +146,7 @@ impl BoxLayout {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::baseline-position\0".as_ptr() as *const _,
+                c"notify::baseline-position".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_baseline_position_trampoline::<F> as *const (),
                 )),
@@ -169,7 +169,7 @@ impl BoxLayout {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::homogeneous\0".as_ptr() as *const _,
+                c"notify::homogeneous".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_homogeneous_trampoline::<F> as *const (),
                 )),
@@ -192,7 +192,7 @@ impl BoxLayout {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::spacing\0".as_ptr() as *const _,
+                c"notify::spacing".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_spacing_trampoline::<F> as *const (),
                 )),
@@ -262,6 +262,7 @@ impl BoxLayoutBuilder {
     /// Build the [`BoxLayout`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> BoxLayout {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

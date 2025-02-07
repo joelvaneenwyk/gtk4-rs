@@ -1,24 +1,21 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for subclassing [`ListBoxRow`](crate::ListBoxRow).
+//! Traits intended for subclassing [`ListBoxRow`].
 
 use glib::translate::*;
 
-use crate::{ffi, prelude::*, subclass::prelude::*, ListBoxRow};
+use crate::{ffi, prelude::*, subclass::prelude::*, Actionable, ListBoxRow};
 
-pub trait ListBoxRowImpl: ListBoxRowImplExt + WidgetImpl {
+pub trait ListBoxRowImpl:
+    WidgetImpl + ObjectSubclass<Type: IsA<ListBoxRow> + IsA<Actionable>>
+{
     fn activate(&self) {
         self.parent_activate()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::ListBoxRowImplExt> Sealed for T {}
-}
-
-pub trait ListBoxRowImplExt: sealed::Sealed + ObjectSubclass {
+pub trait ListBoxRowImplExt: ListBoxRowImpl {
     fn parent_activate(&self) {
         unsafe {
             let data = Self::type_data();

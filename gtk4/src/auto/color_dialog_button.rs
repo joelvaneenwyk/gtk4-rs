@@ -87,7 +87,7 @@ impl ColorDialogButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"activate\0".as_ptr() as *const _,
+                c"activate".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     activate_trampoline::<F> as *const (),
                 )),
@@ -118,7 +118,7 @@ impl ColorDialogButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::dialog\0".as_ptr() as *const _,
+                c"notify::dialog".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_dialog_trampoline::<F> as *const (),
                 )),
@@ -143,7 +143,7 @@ impl ColorDialogButton {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::rgba\0".as_ptr() as *const _,
+                c"notify::rgba".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_rgba_trampoline::<F> as *const (),
                 )),
@@ -381,6 +381,7 @@ impl ColorDialogButtonBuilder {
     /// Build the [`ColorDialogButton`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> ColorDialogButton {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

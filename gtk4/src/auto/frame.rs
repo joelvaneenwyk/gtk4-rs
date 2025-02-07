@@ -276,16 +276,12 @@ impl FrameBuilder {
     /// Build the [`Frame`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Frame {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Frame>> Sealed for T {}
-}
-
-pub trait FrameExt: IsA<Frame> + sealed::Sealed + 'static {
+pub trait FrameExt: IsA<Frame> + 'static {
     #[doc(alias = "gtk_frame_get_child")]
     #[doc(alias = "get_child")]
     fn child(&self) -> Option<Widget> {
@@ -368,7 +364,7 @@ pub trait FrameExt: IsA<Frame> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::child\0".as_ptr() as *const _,
+                c"notify::child".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_child_trampoline::<Self, F> as *const (),
                 )),
@@ -391,7 +387,7 @@ pub trait FrameExt: IsA<Frame> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::label\0".as_ptr() as *const _,
+                c"notify::label".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_label_trampoline::<Self, F> as *const (),
                 )),
@@ -414,7 +410,7 @@ pub trait FrameExt: IsA<Frame> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::label-widget\0".as_ptr() as *const _,
+                c"notify::label-widget".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_label_widget_trampoline::<Self, F> as *const (),
                 )),
@@ -437,7 +433,7 @@ pub trait FrameExt: IsA<Frame> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::label-xalign\0".as_ptr() as *const _,
+                c"notify::label-xalign".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_label_xalign_trampoline::<Self, F> as *const (),
                 )),

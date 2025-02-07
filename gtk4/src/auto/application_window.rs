@@ -417,16 +417,12 @@ impl ApplicationWindowBuilder {
     /// Build the [`ApplicationWindow`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> ApplicationWindow {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::ApplicationWindow>> Sealed for T {}
-}
-
-pub trait ApplicationWindowExt: IsA<ApplicationWindow> + sealed::Sealed + 'static {
+pub trait ApplicationWindowExt: IsA<ApplicationWindow> + 'static {
     #[doc(alias = "gtk_application_window_get_help_overlay")]
     #[doc(alias = "get_help_overlay")]
     fn help_overlay(&self) -> Option<ShortcutsWindow> {
@@ -492,7 +488,7 @@ pub trait ApplicationWindowExt: IsA<ApplicationWindow> + sealed::Sealed + 'stati
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::show-menubar\0".as_ptr() as *const _,
+                c"notify::show-menubar".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_show_menubar_trampoline::<Self, F> as *const (),
                 )),

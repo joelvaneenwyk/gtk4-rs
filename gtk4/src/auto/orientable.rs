@@ -23,12 +23,7 @@ impl Orientable {
     pub const NONE: Option<&'static Orientable> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Orientable>> Sealed for T {}
-}
-
-pub trait OrientableExt: IsA<Orientable> + sealed::Sealed + 'static {
+pub trait OrientableExt: IsA<Orientable> + 'static {
     #[doc(alias = "gtk_orientable_get_orientation")]
     #[doc(alias = "get_orientation")]
     fn orientation(&self) -> Orientation {
@@ -67,7 +62,7 @@ pub trait OrientableExt: IsA<Orientable> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::orientation\0".as_ptr() as *const _,
+                c"notify::orientation".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_orientation_trampoline::<Self, F> as *const (),
                 )),

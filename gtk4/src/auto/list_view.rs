@@ -209,7 +209,7 @@ impl ListView {
     pub fn connect_activate<F: Fn(&Self, u32) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn activate_trampoline<F: Fn(&ListView, u32) + 'static>(
             this: *mut ffi::GtkListView,
-            position: libc::c_uint,
+            position: std::ffi::c_uint,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -219,7 +219,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"activate\0".as_ptr() as *const _,
+                c"activate".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     activate_trampoline::<F> as *const (),
                 )),
@@ -245,7 +245,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::enable-rubberband\0".as_ptr() as *const _,
+                c"notify::enable-rubberband".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_enable_rubberband_trampoline::<F> as *const (),
                 )),
@@ -268,7 +268,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::factory\0".as_ptr() as *const _,
+                c"notify::factory".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_factory_trampoline::<F> as *const (),
                 )),
@@ -293,7 +293,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::header-factory\0".as_ptr() as *const _,
+                c"notify::header-factory".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_header_factory_trampoline::<F> as *const (),
                 )),
@@ -316,7 +316,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::model\0".as_ptr() as *const _,
+                c"notify::model".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_model_trampoline::<F> as *const (),
                 )),
@@ -339,7 +339,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::show-separators\0".as_ptr() as *const _,
+                c"notify::show-separators".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_show_separators_trampoline::<F> as *const (),
                 )),
@@ -365,7 +365,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::single-click-activate\0".as_ptr() as *const _,
+                c"notify::single-click-activate".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_single_click_activate_trampoline::<F> as *const (),
                 )),
@@ -390,7 +390,7 @@ impl ListView {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::tab-behavior\0".as_ptr() as *const _,
+                c"notify::tab-behavior".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_tab_behavior_trampoline::<F> as *const (),
                 )),
@@ -696,6 +696,7 @@ impl ListViewBuilder {
     /// Build the [`ListView`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> ListView {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

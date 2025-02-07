@@ -1,7 +1,7 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for subclassing [`IMContext`](crate::IMContext).
+//! Traits intended for subclassing [`IMContext`].
 
 use glib::{translate::*, GString};
 use pango::AttrList;
@@ -9,7 +9,7 @@ use pango::AttrList;
 use crate::{ffi, prelude::*, subclass::prelude::*, IMContext, Widget};
 
 #[allow(clippy::upper_case_acronyms)]
-pub trait IMContextImpl: IMContextImplExt + ObjectImpl {
+pub trait IMContextImpl: ObjectImpl + ObjectSubclass<Type: IsA<IMContext>> {
     fn commit(&self, string: &str) {
         self.parent_commit(string)
     }
@@ -74,13 +74,8 @@ pub trait IMContextImpl: IMContextImplExt + ObjectImpl {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IMContextImplExt> Sealed for T {}
-}
-
 #[allow(clippy::upper_case_acronyms)]
-pub trait IMContextImplExt: sealed::Sealed + ObjectSubclass {
+pub trait IMContextImplExt: IMContextImpl {
     fn parent_commit(&self, string: &str) {
         unsafe {
             let data = Self::type_data();

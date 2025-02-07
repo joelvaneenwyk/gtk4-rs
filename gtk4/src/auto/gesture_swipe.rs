@@ -57,8 +57,8 @@ impl GestureSwipe {
     pub fn connect_swipe<F: Fn(&Self, f64, f64) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn swipe_trampoline<F: Fn(&GestureSwipe, f64, f64) + 'static>(
             this: *mut ffi::GtkGestureSwipe,
-            velocity_x: libc::c_double,
-            velocity_y: libc::c_double,
+            velocity_x: std::ffi::c_double,
+            velocity_y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -68,7 +68,7 @@ impl GestureSwipe {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"swipe\0".as_ptr() as *const _,
+                c"swipe".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     swipe_trampoline::<F> as *const (),
                 )),
@@ -150,6 +150,7 @@ impl GestureSwipeBuilder {
     /// Build the [`GestureSwipe`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> GestureSwipe {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

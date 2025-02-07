@@ -23,12 +23,7 @@ impl Sorter {
     pub const NONE: Option<&'static Sorter> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::Sorter>> Sealed for T {}
-}
-
-pub trait SorterExt: IsA<Sorter> + sealed::Sealed + 'static {
+pub trait SorterExt: IsA<Sorter> + 'static {
     #[doc(alias = "gtk_sorter_changed")]
     fn changed(&self, change: SorterChange) {
         unsafe {
@@ -73,7 +68,7 @@ pub trait SorterExt: IsA<Sorter> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"changed\0".as_ptr() as *const _,
+                c"changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     changed_trampoline::<Self, F> as *const (),
                 )),

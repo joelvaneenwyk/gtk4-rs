@@ -23,12 +23,7 @@ impl SelectionModel {
     pub const NONE: Option<&'static SelectionModel> = None;
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::SelectionModel>> Sealed for T {}
-}
-
-pub trait SelectionModelExt: IsA<SelectionModel> + sealed::Sealed + 'static {
+pub trait SelectionModelExt: IsA<SelectionModel> + 'static {
     #[doc(alias = "gtk_selection_model_get_selection")]
     #[doc(alias = "get_selection")]
     fn selection(&self) -> Bitset {
@@ -152,8 +147,8 @@ pub trait SelectionModelExt: IsA<SelectionModel> + sealed::Sealed + 'static {
             F: Fn(&P, u32, u32) + 'static,
         >(
             this: *mut ffi::GtkSelectionModel,
-            position: libc::c_uint,
-            n_items: libc::c_uint,
+            position: std::ffi::c_uint,
+            n_items: std::ffi::c_uint,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -167,7 +162,7 @@ pub trait SelectionModelExt: IsA<SelectionModel> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"selection-changed\0".as_ptr() as *const _,
+                c"selection-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     selection_changed_trampoline::<Self, F> as *const (),
                 )),

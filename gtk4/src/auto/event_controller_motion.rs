@@ -60,8 +60,8 @@ impl EventControllerMotion {
     pub fn connect_enter<F: Fn(&Self, f64, f64) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn enter_trampoline<F: Fn(&EventControllerMotion, f64, f64) + 'static>(
             this: *mut ffi::GtkEventControllerMotion,
-            x: libc::c_double,
-            y: libc::c_double,
+            x: std::ffi::c_double,
+            y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -71,7 +71,7 @@ impl EventControllerMotion {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"enter\0".as_ptr() as *const _,
+                c"enter".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     enter_trampoline::<F> as *const (),
                 )),
@@ -93,7 +93,7 @@ impl EventControllerMotion {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"leave\0".as_ptr() as *const _,
+                c"leave".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     leave_trampoline::<F> as *const (),
                 )),
@@ -108,8 +108,8 @@ impl EventControllerMotion {
             F: Fn(&EventControllerMotion, f64, f64) + 'static,
         >(
             this: *mut ffi::GtkEventControllerMotion,
-            x: libc::c_double,
-            y: libc::c_double,
+            x: std::ffi::c_double,
+            y: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -119,7 +119,7 @@ impl EventControllerMotion {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"motion\0".as_ptr() as *const _,
+                c"motion".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     motion_trampoline::<F> as *const (),
                 )),
@@ -144,7 +144,7 @@ impl EventControllerMotion {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::contains-pointer\0".as_ptr() as *const _,
+                c"notify::contains-pointer".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_contains_pointer_trampoline::<F> as *const (),
                 )),
@@ -169,7 +169,7 @@ impl EventControllerMotion {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::is-pointer\0".as_ptr() as *const _,
+                c"notify::is-pointer".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_is_pointer_trampoline::<F> as *const (),
                 )),
@@ -227,6 +227,7 @@ impl EventControllerMotionBuilder {
     /// Build the [`EventControllerMotion`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> EventControllerMotion {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

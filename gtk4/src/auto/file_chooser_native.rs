@@ -117,7 +117,7 @@ impl FileChooserNative {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::accept-label\0".as_ptr() as *const _,
+                c"notify::accept-label".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_accept_label_trampoline::<F> as *const (),
                 )),
@@ -140,7 +140,7 @@ impl FileChooserNative {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::cancel-label\0".as_ptr() as *const _,
+                c"notify::cancel-label".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_cancel_label_trampoline::<F> as *const (),
                 )),
@@ -242,6 +242,7 @@ impl FileChooserNativeBuilder {
     /// Build the [`FileChooserNative`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> FileChooserNative {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

@@ -44,7 +44,7 @@ impl GestureZoom {
     pub fn connect_scale_changed<F: Fn(&Self, f64) + 'static>(&self, f: F) -> SignalHandlerId {
         unsafe extern "C" fn scale_changed_trampoline<F: Fn(&GestureZoom, f64) + 'static>(
             this: *mut ffi::GtkGestureZoom,
-            scale: libc::c_double,
+            scale: std::ffi::c_double,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -54,7 +54,7 @@ impl GestureZoom {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"scale-changed\0".as_ptr() as *const _,
+                c"scale-changed".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     scale_changed_trampoline::<F> as *const (),
                 )),
@@ -118,6 +118,7 @@ impl GestureZoomBuilder {
     /// Build the [`GestureZoom`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> GestureZoom {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

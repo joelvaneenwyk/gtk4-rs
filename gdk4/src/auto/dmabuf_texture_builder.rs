@@ -2,6 +2,9 @@
 // from gir-files (https://github.com/gtk-rs/gir-files)
 // DO NOT EDIT
 
+#[cfg(feature = "v4_16")]
+#[cfg_attr(docsrs, doc(cfg(feature = "v4_16")))]
+use crate::ColorState;
 use crate::{ffi, Display, Texture};
 use glib::{
     prelude::*,
@@ -24,6 +27,19 @@ impl DmabufTextureBuilder {
     pub fn new() -> DmabufTextureBuilder {
         assert_initialized_main_thread!();
         unsafe { from_glib_full(ffi::gdk_dmabuf_texture_builder_new()) }
+    }
+
+    #[cfg(feature = "v4_16")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "v4_16")))]
+    #[doc(alias = "gdk_dmabuf_texture_builder_get_color_state")]
+    #[doc(alias = "get_color_state")]
+    #[doc(alias = "color-state")]
+    pub fn color_state(&self) -> Option<ColorState> {
+        unsafe {
+            from_glib_none(ffi::gdk_dmabuf_texture_builder_get_color_state(
+                self.to_glib_none().0,
+            ))
+        }
     }
 
     #[doc(alias = "gdk_dmabuf_texture_builder_get_display")]
@@ -116,6 +132,19 @@ impl DmabufTextureBuilder {
     #[doc(alias = "get_width")]
     pub fn width(&self) -> u32 {
         unsafe { ffi::gdk_dmabuf_texture_builder_get_width(self.to_glib_none().0) }
+    }
+
+    #[cfg(feature = "v4_16")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "v4_16")))]
+    #[doc(alias = "gdk_dmabuf_texture_builder_set_color_state")]
+    #[doc(alias = "color-state")]
+    pub fn set_color_state(&self, color_state: Option<&ColorState>) {
+        unsafe {
+            ffi::gdk_dmabuf_texture_builder_set_color_state(
+                self.to_glib_none().0,
+                color_state.to_glib_none().0,
+            );
+        }
     }
 
     #[doc(alias = "gdk_dmabuf_texture_builder_set_display")]
@@ -223,6 +252,33 @@ impl DmabufTextureBuilder {
         }
     }
 
+    #[cfg(feature = "v4_16")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "v4_16")))]
+    #[doc(alias = "color-state")]
+    pub fn connect_color_state_notify<F: Fn(&Self) + 'static>(&self, f: F) -> SignalHandlerId {
+        unsafe extern "C" fn notify_color_state_trampoline<
+            F: Fn(&DmabufTextureBuilder) + 'static,
+        >(
+            this: *mut ffi::GdkDmabufTextureBuilder,
+            _param_spec: glib::ffi::gpointer,
+            f: glib::ffi::gpointer,
+        ) {
+            let f: &F = &*(f as *const F);
+            f(&from_glib_borrow(this))
+        }
+        unsafe {
+            let f: Box_<F> = Box_::new(f);
+            connect_raw(
+                self.as_ptr() as *mut _,
+                c"notify::color-state".as_ptr() as *const _,
+                Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
+                    notify_color_state_trampoline::<F> as *const (),
+                )),
+                Box_::into_raw(f),
+            )
+        }
+    }
+
     #[cfg(feature = "v4_14")]
     #[cfg_attr(docsrs, doc(cfg(feature = "v4_14")))]
     #[doc(alias = "display")]
@@ -239,7 +295,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::display\0".as_ptr() as *const _,
+                c"notify::display".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_display_trampoline::<F> as *const (),
                 )),
@@ -264,7 +320,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::fourcc\0".as_ptr() as *const _,
+                c"notify::fourcc".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_fourcc_trampoline::<F> as *const (),
                 )),
@@ -289,7 +345,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::height\0".as_ptr() as *const _,
+                c"notify::height".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_height_trampoline::<F> as *const (),
                 )),
@@ -314,7 +370,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::modifier\0".as_ptr() as *const _,
+                c"notify::modifier".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_modifier_trampoline::<F> as *const (),
                 )),
@@ -339,7 +395,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::n-planes\0".as_ptr() as *const _,
+                c"notify::n-planes".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_n_planes_trampoline::<F> as *const (),
                 )),
@@ -366,7 +422,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::premultiplied\0".as_ptr() as *const _,
+                c"notify::premultiplied".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_premultiplied_trampoline::<F> as *const (),
                 )),
@@ -393,7 +449,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::update-region\0".as_ptr() as *const _,
+                c"notify::update-region".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_update_region_trampoline::<F> as *const (),
                 )),
@@ -420,7 +476,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::update-texture\0".as_ptr() as *const _,
+                c"notify::update-texture".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_update_texture_trampoline::<F> as *const (),
                 )),
@@ -445,7 +501,7 @@ impl DmabufTextureBuilder {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::width\0".as_ptr() as *const _,
+                c"notify::width".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_width_trampoline::<F> as *const (),
                 )),

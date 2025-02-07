@@ -1,8 +1,7 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for implementing the [`Accessible`](crate::Accessible)
-//! interface.
+//! Traits intended for implementing the [`Accessible`] interface.
 
 use std::mem::MaybeUninit;
 
@@ -12,7 +11,7 @@ use crate::{
     ffi, prelude::*, subclass::prelude::*, ATContext, Accessible, AccessiblePlatformState,
 };
 
-pub trait AccessibleImpl: ObjectImpl {
+pub trait AccessibleImpl: ObjectImpl + ObjectSubclass<Type: IsA<Accessible>> {
     #[doc(alias = "get_platform_state")]
     fn platform_state(&self, state: AccessiblePlatformState) -> bool {
         self.parent_platform_state(state)
@@ -44,12 +43,7 @@ pub trait AccessibleImpl: ObjectImpl {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::AccessibleImplExt> Sealed for T {}
-}
-
-pub trait AccessibleImplExt: sealed::Sealed + ObjectSubclass {
+pub trait AccessibleImplExt: AccessibleImpl {
     fn parent_platform_state(&self, state: AccessiblePlatformState) -> bool {
         unsafe {
             let type_data = Self::type_data();

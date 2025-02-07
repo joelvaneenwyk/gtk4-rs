@@ -104,7 +104,7 @@ impl Shortcut {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::action\0".as_ptr() as *const _,
+                c"notify::action".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_action_trampoline::<F> as *const (),
                 )),
@@ -127,7 +127,7 @@ impl Shortcut {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::arguments\0".as_ptr() as *const _,
+                c"notify::arguments".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_arguments_trampoline::<F> as *const (),
                 )),
@@ -150,7 +150,7 @@ impl Shortcut {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::trigger\0".as_ptr() as *const _,
+                c"notify::trigger".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_trigger_trampoline::<F> as *const (),
                 )),
@@ -204,6 +204,7 @@ impl ShortcutBuilder {
     /// Build the [`Shortcut`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> Shortcut {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

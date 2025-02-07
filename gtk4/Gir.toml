@@ -255,6 +255,7 @@ generate = [
     "Gtk.SymbolicColor",
     "Gtk.SymbolicPaintable",
     "Gtk.SystemSetting",
+    "Gtk.TextBufferNotifyFlags",
     "Gtk.TextChildAnchor",
     "Gtk.TextDirection",
     "Gtk.TextExtendSelection",
@@ -2080,19 +2081,20 @@ status = "generate"
 final_type = false
 manual_traits = ["SnapshotExtManual"]
     [[object.function]]
-    pattern = "free_to_(node|paintable)"
-    ignore = true # C convenience functions
-    [[object.function]]
     name = "append_border"
     manual = true
     [[object.function]]
     name = "push_debug"
     manual = true # ignore format args
     [[object.function]]
+    pattern = "free_to_node"
+    rename = "to_node"
+    [[object.function]]
+    pattern = "free_to_paintable"
+    rename = "to_paintable"
+    [[object.function]]
     pattern = "to_(node|paintable)"
-        [[object.function.parameter]]
-        name = "snapshot"
-        move = true
+    ignore = true
 
 [[object]]
 name = "Gtk.SortListModel"
@@ -2194,6 +2196,9 @@ manual_traits = ["TextBufferExtManual"]
     [[object.function]]
     name = "insert_with_tags_by_name"
     manual = true
+    [[object.function]]
+    name = "add_commit_notify"
+    manual = true # Ends up using from_glib_borrow for a TextBufferNotifyFlags
 
 [[object]]
 name = "Gtk.TextIter"

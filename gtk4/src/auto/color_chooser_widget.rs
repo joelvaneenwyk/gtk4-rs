@@ -61,7 +61,7 @@ impl ColorChooserWidget {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::show-editor\0".as_ptr() as *const _,
+                c"notify::show-editor".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_show_editor_trampoline::<F> as *const (),
                 )),
@@ -301,6 +301,7 @@ impl ColorChooserWidgetBuilder {
     /// Build the [`ColorChooserWidget`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> ColorChooserWidget {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }

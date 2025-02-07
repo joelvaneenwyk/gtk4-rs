@@ -262,16 +262,12 @@ impl DrawingAreaBuilder {
     /// Build the [`DrawingArea`].
     #[must_use = "Building the object from the builder is usually expensive and is not expected to have side effects"]
     pub fn build(self) -> DrawingArea {
+        assert_initialized_main_thread!();
         self.builder.build()
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::IsA<super::DrawingArea>> Sealed for T {}
-}
-
-pub trait DrawingAreaExt: IsA<DrawingArea> + sealed::Sealed + 'static {
+pub trait DrawingAreaExt: IsA<DrawingArea> + 'static {
     #[doc(alias = "gtk_drawing_area_get_content_height")]
     #[doc(alias = "get_content_height")]
     #[doc(alias = "content-height")]
@@ -309,8 +305,8 @@ pub trait DrawingAreaExt: IsA<DrawingArea> + sealed::Sealed + 'static {
             F: Fn(&P, i32, i32) + 'static,
         >(
             this: *mut ffi::GtkDrawingArea,
-            width: libc::c_int,
-            height: libc::c_int,
+            width: std::ffi::c_int,
+            height: std::ffi::c_int,
             f: glib::ffi::gpointer,
         ) {
             let f: &F = &*(f as *const F);
@@ -324,7 +320,7 @@ pub trait DrawingAreaExt: IsA<DrawingArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"resize\0".as_ptr() as *const _,
+                c"resize".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     resize_trampoline::<Self, F> as *const (),
                 )),
@@ -350,7 +346,7 @@ pub trait DrawingAreaExt: IsA<DrawingArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::content-height\0".as_ptr() as *const _,
+                c"notify::content-height".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_content_height_trampoline::<Self, F> as *const (),
                 )),
@@ -376,7 +372,7 @@ pub trait DrawingAreaExt: IsA<DrawingArea> + sealed::Sealed + 'static {
             let f: Box_<F> = Box_::new(f);
             connect_raw(
                 self.as_ptr() as *mut _,
-                b"notify::content-width\0".as_ptr() as *const _,
+                c"notify::content-width".as_ptr() as *const _,
                 Some(std::mem::transmute::<*const (), unsafe extern "C" fn()>(
                     notify_content_width_trampoline::<Self, F> as *const (),
                 )),

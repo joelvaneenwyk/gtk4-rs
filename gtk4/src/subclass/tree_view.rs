@@ -1,18 +1,18 @@
 // Take a look at the license at the top of the repository in the LICENSE file.
 
 // rustdoc-stripper-ignore-next
-//! Traits intended for subclassing [`TreeView`](crate::TreeView).
+//! Traits intended for subclassing [`TreeView`].
 
 use glib::translate::*;
 
 use crate::{
-    ffi, prelude::*, subclass::prelude::*, MovementStep, TreeIter, TreePath, TreeView,
+    ffi, prelude::*, subclass::prelude::*, MovementStep, Scrollable, TreeIter, TreePath, TreeView,
     TreeViewColumn,
 };
 
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait TreeViewImpl: TreeViewImplExt + WidgetImpl {
+pub trait TreeViewImpl: WidgetImpl + ObjectSubclass<Type: IsA<TreeView> + IsA<Scrollable>> {
     fn columns_changed(&self) {
         self.parent_columns_changed()
     }
@@ -74,14 +74,9 @@ pub trait TreeViewImpl: TreeViewImplExt + WidgetImpl {
     }
 }
 
-mod sealed {
-    pub trait Sealed {}
-    impl<T: super::TreeViewImplExt> Sealed for T {}
-}
-
 #[cfg_attr(feature = "v4_10", deprecated = "Since 4.10")]
 #[allow(deprecated)]
-pub trait TreeViewImplExt: sealed::Sealed + ObjectSubclass {
+pub trait TreeViewImplExt: TreeViewImpl {
     fn parent_columns_changed(&self) {
         unsafe {
             let data = Self::type_data();
