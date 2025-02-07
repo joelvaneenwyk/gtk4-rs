@@ -80,7 +80,7 @@ env:
 tasks:
   default:
     cmds:
-      - task: build
+      - task: run
 
   check-environment:
     aliases: [env]
@@ -123,7 +123,7 @@ tasks:
     dir: ./target/release/
     cmds:
       - cmd: | # shell
-          cargo run --release --locked
+          cargo run --features="v4_10" --release --locked --bin clock
 
   gtk:
     deps: [gtk-build]
@@ -149,9 +149,8 @@ tasks:
     generates:
       - ./gir/.gitignore
       - ./gir-files/.gitignore
-      - ./gtk/.gitignore
     cmds:
-      - cmd: git submodule update --checkout --recursive
+      - cmd: git submodule update --init --checkout --recursive
 
   gtk-build:
     deps: [git-submodule-update]
